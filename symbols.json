@@ -1,0 +1,240 @@
+[
+  {
+    "parent": null,
+    "interfaces": [],
+    "scope": "GLOBAL",
+    "name": "SimpleMain",
+    "isAbstract": false,
+    "symbolType": "class"
+  },
+  {
+    "access": "public",
+    "scope": "SimpleMain",
+    "name": "main",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [{
+      "dataType": "String[]",
+      "scope": "SimpleMain::main",
+      "name": "args",
+      "symbolType": "parameter"
+    }],
+    "symbolType": "method",
+    "returnType": "void"
+  },
+  {
+    "dataType": "String[]",
+    "scope": "SimpleMain::main",
+    "name": "args",
+    "symbolType": "parameter"
+  },
+  {
+    "access": "local",
+    "dataType": "int",
+    "scope": "SimpleMain::main",
+    "name": "x",
+    "initialValue": "10",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "dataType": "int",
+    "scope": "SimpleMain::main",
+    "name": "y",
+    "initialValue": "20",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "dataType": "int",
+    "scope": "SimpleMain::main",
+    "name": "sum",
+    "initialValue": "x+y",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "dataType": "int",
+    "scope": "SimpleMain::main",
+    "name": "i",
+    "initialValue": "0",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "dataType": "int[]",
+    "scope": "SimpleMain::main",
+    "name": "numbers",
+    "initialValue": "newint[3]",
+    "symbolType": "variable"
+  },
+  {
+    "parent": null,
+    "interfaces": [],
+    "scope": "GLOBAL",
+    "name": "Calculator",
+    "isAbstract": false,
+    "symbolType": "class"
+  },
+  {
+    "dataType": "int",
+    "scope": "Calculator::add",
+    "name": "a",
+    "symbolType": "parameter"
+  },
+  {
+    "dataType": "int",
+    "scope": "Calculator::add",
+    "name": "b",
+    "symbolType": "parameter"
+  },
+  {
+    "access": "public",
+    "scope": "Calculator",
+    "name": "add",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [
+      {
+        "dataType": "int",
+        "scope": "Calculator::add",
+        "name": "a",
+        "symbolType": "parameter"
+      },
+      {
+        "dataType": "int",
+        "scope": "Calculator::add",
+        "name": "b",
+        "symbolType": "parameter"
+      }
+    ],
+    "symbolType": "method",
+    "returnType": "int"
+  },
+  {
+    "dataType": "int",
+    "scope": "Calculator::multiply",
+    "name": "a",
+    "symbolType": "parameter"
+  },
+  {
+    "dataType": "int",
+    "scope": "Calculator::multiply",
+    "name": "b",
+    "symbolType": "parameter"
+  },
+  {
+    "access": "public",
+    "scope": "Calculator",
+    "name": "multiply",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [
+      {
+        "dataType": "int",
+        "scope": "Calculator::multiply",
+        "name": "a",
+        "symbolType": "parameter"
+      },
+      {
+        "dataType": "int",
+        "scope": "Calculator::multiply",
+        "name": "b",
+        "symbolType": "parameter"
+      }
+    ],
+    "symbolType": "method",
+    "returnType": "int"
+  },
+  {
+    "access": "local",
+    "dataType": "int",
+    "scope": "Calculator::multiply",
+    "name": "result",
+    "initialValue": "0",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "dataType": "int",
+    "scope": "Calculator::multiply",
+    "name": "i",
+    "initialValue": "0",
+    "symbolType": "variable"
+  },
+  {
+    "scope": "GLOBAL",
+    "name": "MathOperations",
+    "symbolType": "interface"
+  },
+  {
+    "dataType": "int",
+    "scope": "MathOperations::add",
+    "name": "a",
+    "symbolType": "parameter"
+  },
+  {
+    "dataType": "int",
+    "scope": "MathOperations::add",
+    "name": "b",
+    "symbolType": "parameter"
+  },
+  {
+    "access": "public",
+    "scope": "MathOperations",
+    "name": "add",
+    "isOverride": false,
+    "isAbstract": true,
+    "parameters": [
+      {
+        "dataType": "int",
+        "scope": "MathOperations::add",
+        "name": "a",
+        "symbolType": "parameter"
+      },
+      {
+        "dataType": "int",
+        "scope": "MathOperations::add",
+        "name": "b",
+        "symbolType": "parameter"
+      }
+    ],
+    "symbolType": "method",
+    "returnType": "int"
+  },
+  {
+    "dataType": "int",
+    "scope": "MathOperations::subtract",
+    "name": "a",
+    "symbolType": "parameter"
+  },
+  {
+    "dataType": "int",
+    "scope": "MathOperations::subtract",
+    "name": "b",
+    "symbolType": "parameter"
+  },
+  {
+    "access": "public",
+    "scope": "MathOperations",
+    "name": "subtract",
+    "isOverride": false,
+    "isAbstract": true,
+    "parameters": [
+      {
+        "dataType": "int",
+        "scope": "MathOperations::subtract",
+        "name": "a",
+        "symbolType": "parameter"
+      },
+      {
+        "dataType": "int",
+        "scope": "MathOperations::subtract",
+        "name": "b",
+        "symbolType": "parameter"
+      }
+    ],
+    "symbolType": "method",
+    "returnType": "int"
+  }
+]
