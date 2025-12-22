@@ -1059,6 +1059,11 @@ class ErrorDetection {
             vector<Error> ans;
             size_t error_num=0;
 
+            /*
+                This section was added to the symbol table module because the project specification
+                 states that duplicate variables must not be printed in the symbol table. 
+                In this part, the results of the checks performed within that module are used.
+            */
             for(auto err : InProcessError){
                 ans.push_back(Error(err.first,ErrorType::DuplicateVariableInScope));
                 error_num++;
