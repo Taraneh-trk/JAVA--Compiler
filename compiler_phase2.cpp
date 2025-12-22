@@ -1346,6 +1346,55 @@ public:
     }
 };
 
+// ============================= Error Detection ============================
+
+enum class ErrorType {
+    DuplicateVariableInScope,
+    MethodCallSignatureMismatch,
+    ReturnTypeMismatch,
+    CyclicInheritance,
+    InvalidVariableAccess
+};
+
+class Error{
+    public:
+        size_t error_line;
+        ErrorType error_type;
+};
+
+class ErrorDetection {
+    protected:
+        string buffer;
+        size_t pos;
+        SymbolTable* symbol_table;
+    public:
+        ErrorDetection(const string& buffer ,SymbolTable* symbol_table){
+            this->buffer = buffer;
+            this->symbol_table = symbol_table;
+            this->pos = 0;
+        }
+
+        vector<Error> Detect_Duplicate_Variable_In_Scope(){
+
+        }
+
+        vector<Error> Detect_Method_Call_Signature_Mismatch(){
+
+        }
+
+        vector<Error> Detect_Return_Type_Mismatch(){
+
+        }
+
+        vector<Error> Detect_Cyclic_Inheritance(){
+
+        }
+
+        vector<Error> Detect_Invalid_Variable_Access(){
+
+        }
+};
+
 // ============================= Lexer ======================================
 
 template <typename TYPE1 = string>
