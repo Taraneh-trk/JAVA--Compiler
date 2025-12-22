@@ -35,13 +35,5 @@
     "name": "message",
     "initialValue": "Hello World",
     "symbolType": "variable"
-  },
-  {
-    "access": "local",
-    "dataType": "String",
-    "scope": "HelloWorld::main",
-    "name": "message",
-    "initialValue": "bye World",
-    "symbolType": "variable"
   }
 ]

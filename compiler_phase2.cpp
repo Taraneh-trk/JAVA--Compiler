@@ -181,365 +181,13 @@ class SimpleJSON {
         }
 };
 
-// ============================= part 1 - Lexical Analyzer ======================================
-enum class TokenType {
-    Unknown,
-    Identifier,
-    Operator,
-    Keyword,
-    Delimiter,
-    Number,
-    //consts
-    StringLiteral,
-    CharLiteral,
-    BooleanLiteral,
-    NullLiteral
-};
+// this part is for phase 2 (Error Detection)
 
-template <typename TYPE1>
-struct Token{
-    protected:
-        pair<TokenType, TYPE1> token;
-        int line;    
-        int column;
-        size_t pos;
-    public:
-        Token() : token(), line(0), column(0), pos(0) {}
-        Token(TokenType token_type, TYPE1 lexeme, int l = 0, int c = 0, size_t p = 0) {
-            this->token.first = token_type;
-            this->token.second = lexeme;
-            this->line = l;
-            this->column = c;
-            this->pos = p;
-        }
-        TokenType getType() const {
-            return token.first;
-        }
-        TYPE1 getLexeme() const {
-            return token.second;
-        }
-        int getLine() const { 
-            return line; 
-        }
-        int getColumn() const { 
-            return column; 
-        }
-        
-        friend ostream& operator<<(ostream& os, const Token& t) {
-            os << "(" << Token::typeToString(t.token.first) << ", " << t.token.second << ")";
-            return os;
-        }
-        bool isValid() const {
-            return this->token.first != TokenType::Unknown;
-        }
-        static string typeToString(TokenType t) {
-            switch (t) {
-                case TokenType::Identifier: return "Identifier";
-                case TokenType::Number: return "Number";
-                case TokenType::Operator: return "Operator";
-                case TokenType::Keyword: return "Keyword";
-                case TokenType::Delimiter: return "Delimiter";
-                case TokenType::StringLiteral: return "StringLiteral";
-                case TokenType::CharLiteral: return "CharLiteral";
-                case TokenType::BooleanLiteral: return "BooleanLiteral";
-                case TokenType::NullLiteral: return "NullLiteral";
-                case TokenType::Unknown: return "Unknown";
-                default: return "Invalid";
-            }
-        }
-};
+vector<pair<size_t,string>> InProcessError;
 
-class SymbolTable;
+// end error detection part
 
-template <typename TYPE1>
-class BaseTokenRecognizer {
-    public:
-        virtual ~BaseTokenRecognizer() = default;
-        virtual bool match(const string& buffer, size_t& pos, Token<TYPE1>& constructed_token, SymbolTable* symTable = nullptr, int line = 1, int col = 1) = 0;
-};
-
-template <typename TYPE1 = string>
-class IdentifierRecognizer : public BaseTokenRecognizer<TYPE1> {
-    public:
-        bool match(const string& buffer, size_t& pos, Token<TYPE1>& constructed_token, SymbolTable* symTable = nullptr, int line = 1, int col = 1) override {
-            size_t start = pos;
-            string lexeme;
-            
-            if (pos >= buffer.size() || !(isalpha(static_cast<unsigned char>(buffer[pos])) || buffer[pos] == '_' || buffer[pos] == '$'))
-                return false;
-                
-            lexeme += buffer[pos++];
-            while (pos < buffer.size() && (isalnum(static_cast<unsigned char>(buffer[pos])) || buffer[pos] == '_' || buffer[pos] == '$')) {
-                lexeme += buffer[pos++];
-            }
-            
-            constructed_token = Token<TYPE1>(TokenType::Identifier, static_cast<TYPE1>(lexeme), line, col, start);
-            return true;
-        }
-};
-
-template <typename TYPE1 = string>
-class OperatorRecognizer : public BaseTokenRecognizer<TYPE1> {
-    private:
-        const unordered_set<string> operators = {
-            "+", "-", "/", "*", "%", "**",
-            "==", "!=", ">=", "<=", ">", "<",
-            "&&", "||", "!",
-            "=",
-            ".length"
-        };
-        size_t maxLen;
-    public:
-        OperatorRecognizer() {
-            maxLen = 0;
-            for (const auto& op : operators) {
-                if (op.size() > maxLen) 
-                    maxLen = op.size();
-            }
-        }
-        bool match(const string& buffer, size_t& pos, Token<TYPE1>& constructed_token, SymbolTable* symTable = nullptr, int line = 1, int col = 1) override {
-            size_t start = pos;
-            if (pos >= buffer.size()) 
-                return false;
-                
-            size_t lenToCheck = min(maxLen, buffer.size() - pos);
-            for (int len = static_cast<int>(lenToCheck); len >= 1; --len) {
-                string sub = buffer.substr(pos, static_cast<size_t>(len));
-                if (operators.count(sub)) {
-                    pos += static_cast<size_t>(len);
-                    constructed_token = Token<TYPE1>(TokenType::Operator, static_cast<TYPE1>(sub), line, col, start);
-                    return true;
-                }
-            }
-            return false;
-        }
-};
-
-template <typename TYPE1 = string>
-class KeywordRecognizer : public BaseTokenRecognizer<TYPE1> {
-    private:
-        const unordered_set<string> keywords = {
-            "class", "interface", "extends", "implements",
-            "public", "private", "protected", "internal",
-            "static", "void", "abstract", "if", "else",
-            "while", "for", "break", "continue",
-            "return", "new", "this", "import",
-            "print", "read",
-            "true", "false", "null"
-        };
-        const unordered_set<string> types = {
-            "boolean", "int", "char", "String"
-        };
-    public:
-        bool match(const string& buffer, size_t& pos, Token<TYPE1>& constructed_token, SymbolTable* symTable = nullptr, int line = 1, int col = 1) override {
-            size_t start = pos;
-            if (pos >= buffer.size() || !(isalpha(static_cast<unsigned char>(buffer[pos])) || buffer[pos] == '_'))
-                return false;
-                
-            string lexeme;
-            lexeme += buffer[pos++];
-            while (pos < buffer.size() && (isalnum(static_cast<unsigned char>(buffer[pos])) || buffer[pos] == '_')) {
-                lexeme += buffer[pos++];
-            }
-            
-            if (keywords.count(lexeme) || types.count(lexeme)) {
-                constructed_token = Token<TYPE1>(TokenType::Keyword, static_cast<TYPE1>(lexeme), line, col, start);
-                return true;
-            }
-            
-            pos = start;
-            return false;
-        }
-};
-
-template <typename TYPE1 = string>
-class DelimiterRecognizer : public BaseTokenRecognizer<TYPE1> {
-    private:
-        const unordered_set<string> delimiters = {
-            ";", ",", "(", ")", "{", "}", "[", "]", ".","@" //for @override
-        };
-    public:
-        bool match(const string& buffer, size_t& pos, Token<TYPE1>& constructed_token, SymbolTable* symTable = nullptr, int line = 1, int col = 1) override {
-            if (pos >= buffer.size()) 
-                return false;
-                
-            string lexeme(1, buffer[pos]);
-            if (delimiters.count(lexeme)) {
-                constructed_token = Token<TYPE1>(TokenType::Delimiter, static_cast<TYPE1>(lexeme), line, col, pos);
-                pos++;
-                return true;
-            }
-            return false;
-        }
-};
-
-template <typename TYPE1 = string>
-class NumberRecognizer : public BaseTokenRecognizer<TYPE1> {
-    public:
-        bool match(const string& buffer, size_t& pos, Token<TYPE1>& constructed_token, SymbolTable* symTable = nullptr, int line = 1, int col = 1) override {
-            size_t start = pos;
-            if (pos >= buffer.size() || !isdigit(static_cast<unsigned char>(buffer[pos]))) 
-                return false;
-                
-            string lexeme;
-            bool hasUnderscore = false;
-            
-            while (pos < buffer.size()) {
-                char c = buffer[pos];
-                if (isdigit(static_cast<unsigned char>(c))) {
-                    lexeme += c;
-                    pos++;
-                } else if (c == '_') {
-                    if (lexeme.empty() || pos + 1 >= buffer.size() || !isdigit(static_cast<unsigned char>(buffer[pos + 1]))) {
-                        pos = start;
-                        return false;
-                    }
-                    hasUnderscore = true;
-                    lexeme += c;
-                    pos++;
-                } else if (c == 'l' || c == 'L') {
-                    lexeme += c;
-                    pos++;
-                    break;
-                } else {
-                    break;
-                }
-            }
-            
-            if (pos < buffer.size() && isalpha(static_cast<unsigned char>(buffer[pos]))) {
-                pos = start;
-                return false;
-            }
-            
-            if (!lexeme.empty()) {
-                constructed_token = Token<TYPE1>(TokenType::Number, static_cast<TYPE1>(lexeme), line, col, start);
-                return true;
-            }
-            
-            pos = start;
-            return false;
-        }
-};
-
-template <typename TYPE1 = string>
-class LiteralRecognizer : public BaseTokenRecognizer<TYPE1> {
-    private:
-        bool startsWith(const string& buffer, size_t pos, const string& prefix) const {
-            if (pos + prefix.size() > buffer.size()) 
-                return false;
-            if (buffer.compare(pos, prefix.size(), prefix) != 0) 
-                return false;
-                
-            size_t next = pos + prefix.size();
-            if (next < buffer.size()) {
-                char c = buffer[next];
-                if (isalnum(static_cast<unsigned char>(c)) || c == '_') 
-                    return false;
-            }
-            return true;
-        }
-    public:
-        bool match(const string& buffer, size_t& pos, Token<TYPE1>& constructed_token, SymbolTable* symTable = nullptr, int line = 1, int col = 1) override {
-            size_t start = pos;
-            if (pos >= buffer.size()) 
-                return false;
-                
-            char c = buffer[pos];
-            
-            // StringLiteral
-            if (c == '"') {
-                pos++;
-                string content;
-                bool escape = false;
-                
-                while (pos < buffer.size()) {
-                    char ch = buffer[pos];
-                    
-                    if (escape) {
-                        content += ch;
-                        escape = false;
-                        pos++;
-                    } else if (ch == '\\') {
-                        escape = true;
-                        content += ch;
-                        pos++;
-                    } else if (ch == '"') {
-                        pos++;
-                        constructed_token = Token<TYPE1>(TokenType::StringLiteral, static_cast<TYPE1>("\"" + content + "\""), line, col, start);
-                        return true;
-                    } else {
-                        content += ch;
-                        pos++;
-                    }
-                }
-                
-                pos = start;
-                return false;
-            } 
-            // CharLiteral
-            else if (c == '\'') {
-                pos++;
-                if (pos >= buffer.size()) { 
-                    pos = start; 
-                    return false; 
-                }
-                    
-                string content;
-                bool escape = false;
-                
-                if (buffer[pos] == '\\') {
-                    escape = true;
-                    content += buffer[pos];
-                    pos++;
-                    if (pos >= buffer.size()) { 
-                        pos = start; 
-                        return false; 
-                    }
-                    content += buffer[pos];
-                    pos++;
-                } else {
-                    char ch = buffer[pos];
-                    if (ch == '\'' || ch == '\\') {
-                        pos = start;
-                        return false;
-                    }
-                    content += ch;
-                    pos++;
-                }
-                
-                if (pos < buffer.size() && buffer[pos] == '\'') {
-                    pos++;
-                    constructed_token = Token<TYPE1>(TokenType::CharLiteral, static_cast<TYPE1>("'" + content + "'"), line, col, start);
-                    return true;
-                }
-                
-                pos = start;
-                return false;
-            } 
-            // BooleanLiteral: true
-            else if (startsWith(buffer, pos, "true")) {
-                pos += 4;
-                constructed_token = Token<TYPE1>(TokenType::BooleanLiteral, static_cast<TYPE1>("true"), line, col, start);
-                return true;
-            } 
-            // BooleanLiteral: false
-            else if (startsWith(buffer, pos, "false")) {
-                pos += 5;
-                constructed_token = Token<TYPE1>(TokenType::BooleanLiteral, static_cast<TYPE1>("false"), line, col, start);
-                return true;
-            } 
-            // NullLiteral
-            else if (startsWith(buffer, pos, "null")) {
-                pos += 4;
-                constructed_token = Token<TYPE1>(TokenType::NullLiteral, static_cast<TYPE1>("null"), line, col, start);
-                return true;
-            }
-            
-            return false;
-        }
-};
-
-// ============================= part 2 - Symbol Table ======================================
+// ============================= part 2 from phase 1 - Symbol Table ======================================
 
 enum class IdentifierKind {
     Class,
@@ -567,6 +215,7 @@ struct ISymbol {
     virtual string getName() const = 0;
     virtual string getScope() const = 0;
     virtual string getIndexInSymbolTable() const = 0;
+    virtual size_t getLineInCode() const = 0;
 };
 
 struct IdentifierBase : public ISymbol {
@@ -586,6 +235,10 @@ struct IdentifierBase : public ISymbol {
 
     string getIndexInSymbolTable() const override {
         return this->IndexInSymbolTable;
+    }
+
+    size_t getLineInCode() const override {
+        return this->line;
     }
 
     void print() const override {
@@ -760,6 +413,12 @@ struct Symbol {
             return "";
         return data->getIndexInSymbolTable();
     }
+
+    size_t getLineInCode() const {
+        if (!data) 
+            return 0;
+        return data->getLineInCode();
+    }
 };
 
 class Scope {
@@ -809,6 +468,7 @@ public:
                 // Don't print error for parameters - they might be duplicated legitimately
                 if (sym.kind != IdentifierKind::Parameter) {
                     cerr << "[Warning] Duplicate symbol '" << idName << "' in scope '" << symbolScope << "' - keeping first occurrence\n";
+                    InProcessError.push_back(make_pair(sym.data->getLineInCode(), "DuplicateVariableInScope"));
                 }
                 return false;
             }
@@ -1037,12 +697,12 @@ public:
             string scopeName = sym.count("scope") ? sym["scope"] : "GLOBAL";
             
             // Create unique key to prevent processing duplicates
-            string uniqueKey = name + "@" + scopeName + "@" + symbolType;
+            // string uniqueKey = name + "@" + scopeName + "@" + symbolType;
             
-            if (processedSymbols.count(uniqueKey)) {
-                continue;
-            }
-            processedSymbols.insert(uniqueKey);
+            // if (processedSymbols.count(uniqueKey)) {
+            //     continue;
+            // }
+            // processedSymbols.insert(uniqueKey);
             
             IdentifierKind kind = stringToIdentifierKind(symbolType);
             Scope* targetScope = ensureScope(scopeName);
@@ -1356,10 +1016,31 @@ enum class ErrorType {
     InvalidVariableAccess
 };
 
+string tostring(ErrorType type){
+    switch (type) {
+        case ErrorType::DuplicateVariableInScope: return "Duplicate Variable In Scope";
+        case ErrorType::MethodCallSignatureMismatch: return "Method Call Signature Mismatch";
+        case ErrorType::ReturnTypeMismatch: return "Return Type Mismatch";
+        case ErrorType::CyclicInheritance: return "Cyclic Inheritance";
+        case ErrorType::InvalidVariableAccess: return "Invalid Variable Access";
+        default: return "Unknown Error";
+    }
+}
+
 class Error{
-    public:
+    protected:
         size_t error_line;
         ErrorType error_type;
+    public:
+        Error(size_t error_line, ErrorType error_type){
+            this->error_line = error_line;
+            this->error_type = error_type;
+        }
+
+        void PrintError(){
+            cout<<"\nError happened in line "<< this->error_line<<'\n';
+            cout<<"Error Type is {  " << tostring(this->error_type) <<"  }  \n";
+        }
 };
 
 class ErrorDetection {
@@ -1368,129 +1049,97 @@ class ErrorDetection {
         size_t pos;
         SymbolTable* symbol_table;
     public:
-        ErrorDetection(const string& buffer ,SymbolTable* symbol_table){
+        ErrorDetection(const string buffer ,SymbolTable* symbol_table){
             this->buffer = buffer;
             this->symbol_table = symbol_table;
             this->pos = 0;
         }
 
         vector<Error> Detect_Duplicate_Variable_In_Scope(){
+            vector<Error> ans;
+            size_t error_num=0;
 
+            for(auto err : InProcessError){
+                ans.push_back(Error(err.first,ErrorType::DuplicateVariableInScope));
+                error_num++;
+            }
+
+            return ans;
         }
 
         vector<Error> Detect_Method_Call_Signature_Mismatch(){
+            vector<Error> ans;
+            size_t error_num=0;
+            
 
+            return ans;
         }
 
         vector<Error> Detect_Return_Type_Mismatch(){
+            vector<Error> ans;
+            size_t error_num=0;
+            
 
+            return ans;
         }
 
         vector<Error> Detect_Cyclic_Inheritance(){
+            vector<Error> ans;
+            size_t error_num=0;
+            
 
+            return ans;
         }
 
         vector<Error> Detect_Invalid_Variable_Access(){
+            vector<Error> ans;
+            size_t error_num=0;
+            
 
+            return ans;
         }
-};
 
-// ============================= Lexer ======================================
+        void PrintDetectedErrors(ErrorType type=ErrorType::DuplicateVariableInScope){
 
-template <typename TYPE1 = string>
-class Lexer {
-    private:
-        vector<unique_ptr<BaseTokenRecognizer<TYPE1>>> recognizers;
-        SymbolTable* symbolTable;
-    public:
-        Lexer(SymbolTable* symTable = nullptr) : symbolTable(symTable) {
-            recognizers.emplace_back(make_unique<LiteralRecognizer<TYPE1>>());
-            recognizers.emplace_back(make_unique<KeywordRecognizer<TYPE1>>());
-            recognizers.emplace_back(make_unique<OperatorRecognizer<TYPE1>>());
-            recognizers.emplace_back(make_unique<NumberRecognizer<TYPE1>>());
-            recognizers.emplace_back(make_unique<DelimiterRecognizer<TYPE1>>());
-            recognizers.emplace_back(make_unique<IdentifierRecognizer<TYPE1>>());
-        }
-        
-        vector<Token<TYPE1>> tokenize(const string& input) {
-            vector<Token<TYPE1>> tokens;
-            size_t pos = 0;
-            int line = 1, col = 1;
+            size_t error_num=0;
 
-            while (pos < input.size()) {
-                char c = input[pos];
+            vector<Error> Duplicate_Variable_Error = this->Detect_Duplicate_Variable_In_Scope();
 
-                // Handle whitespace
-                if (isspace(static_cast<unsigned char>(c))) {
-                    if (c == '\n') { 
-                        line++; 
-                        col = 1; 
-                    } else {
-                        col++;
-                    }
-                    pos++;
-                    continue;
-                }
+            vector<Error> Method_Call_Signature_Mismatch = this->Detect_Method_Call_Signature_Mismatch();
 
-                // Handle comments
-                if (c == '/' && pos + 1 < input.size()) {
-                    // Single line comment
-                    if (input[pos + 1] == '/') {
-                        pos += 2;
-                        col += 2;
-                        while (pos < input.size() && input[pos] != '\n') {
-                            pos++;
-                            col++;
-                        }
-                        continue;
-                    } 
-                    // Multi-line comment
-                    else if (input[pos + 1] == '*') {
-                        pos += 2;
-                        col += 2;
-                        while (pos + 1 < input.size() && !(input[pos] == '*' && input[pos + 1] == '/')) {
-                            if (input[pos] == '\n') { 
-                                line++; 
-                                col = 1; 
-                            } else {
-                                col++;
-                            }
-                            pos++;
-                        }
-                        if (pos + 1 < input.size()) {
-                            pos += 2;
-                            col += 2;
-                        }
-                        continue;
-                    }
-                }
+            vector<Error> Return_Type_Mismatch = this->Detect_Return_Type_Mismatch();
 
-                bool matched = false;
-                size_t startPos = pos;
-                int startCol = col;
-                
-                for (auto& rec : recognizers) {
-                    Token<TYPE1> tok;
-                    size_t tempPos = pos;
-                    if (rec->match(input, tempPos, tok, symbolTable, line, startCol)) {
-                        tokens.push_back(tok);
-                        col += static_cast<int>(tempPos - pos);
-                        pos = tempPos;
-                        matched = true;
-                        break;
-                    }
-                }
+            vector<Error> Cyclic_Inheritance = this->Detect_Cyclic_Inheritance();
 
-                if (!matched) {
-                    cerr << "[Error] Invalid token '" << input[pos] 
-                         << "' at line " << line << ", column " << col << "\n";
-                    tokens.emplace_back(TokenType::Unknown, string(1, input[pos]), line, col, pos);
-                    pos++; 
-                    col++;
-                }
+            vector<Error> Invalid_Variable_Access = this->Detect_Invalid_Variable_Access();
+
+            cout<<"\n==================== Detected Errors ====================\n";
+
+            for(auto err : Duplicate_Variable_Error){
+                err.PrintError();
+                error_num++;
+            }
+            for(auto err : Method_Call_Signature_Mismatch){
+                err.PrintError();
+                error_num++;
+            }
+            for(auto err : Return_Type_Mismatch){
+                err.PrintError();
+                error_num++;
+            }
+            for(auto err : Cyclic_Inheritance){
+                err.PrintError();
+                error_num++;
+            }
+            for(auto err : Invalid_Variable_Access){
+                err.PrintError();
+                error_num++;
             }
 
-            return tokens;
+            cout<<"\n=========================================================\n";
+
+            cout<<"\nError count : "<<error_num<<" \n";
+
         }
 };
 
@@ -1500,7 +1149,7 @@ int main() {
 
     cout << "\n";
     cout << "========================================================================\n";
-    cout << "    Java-- Compiler - Lexical Analyzer & Symbol Table\n";
+    cout << "    Java-- Compiler - Error Detection\n";
     cout << "========================================================================\n\n";
 
     SymbolTable symbolTable;
@@ -1522,75 +1171,10 @@ int main() {
     buffer_input << file.rdbuf();      
     string testCode = buffer_input.str();
 
-    Lexer<string> lexer(&symbolTable);
-    auto tokens = lexer.tokenize(testCode);
-
-    cout << "\n==================== Tokenization Results ====================\n";
-    cout << left << setw(8) << "Token#" 
-         << setw(20) << "Type" 
-         << setw(25) << "Lexeme" 
-         << setw(12) << "Line:Col" << "\n";
-    cout << string(65, '-') << "\n";
-    
-    ll token_count = 1;
-    for(const auto& t : tokens){
-        Token<string> token_type;
-        string token_type_string = token_type.typeToString(t.getType());
-        cout << left << setw(8) << token_count++;
-        cout << setw(20) << token_type_string;
-        string lexeme = t.getLexeme();
-        if (lexeme.length() > 23) {
-            lexeme = lexeme.substr(0, 20) + "...";
-        }
-        cout << setw(25) << lexeme;
-        cout << setw(12) << (to_string(t.getLine()) + ":" + to_string(t.getColumn()));
-        cout << "\n";
-    }
-    
-    cout << "==============================================================\n";
-    cout << "\nTotal Tokens: " << tokens.size() << "\n";
-    
     symbolTable.dump();
 
-    cout << "\n==================== Symbol Lookup ====================\n";
-    string symbolName,scope;
-    
-    while (true) {
-        
-        cout << "\nEnter symbol name to lookup (or 'quit' to exit): ";
-        getline(cin, symbolName);
-        if (symbolName == "quit") {
-            break;
-        }
-        cout << "\nEnter symbol scope to lookup : ";
-        getline(cin, scope);
-
-        if (symbolName.empty()) {
-            continue;
-        }
-        
-        // Search in symbol table
-        symbolTable.lookup(symbolName,scope);
-        // auto result = symbolTable.lookup(symbolName,scope);
-        // if (result.has_value()) {
-        //     cout << "\n[Found] Symbol: " << symbolName << "\n";
-        //     cout << "Attributes:\n";
-        //     for (const auto& [key, value] : result.value()) {
-        //         cout << "  " << key << ": " << value << "\n";
-        //     }
-        // } else {
-        //     cout << "\n[Not Found] Symbol '" << symbolName << "' not found in symbol table\n";
-        // }
-        
-        // Search in scope structure
-        // Symbol* symbol = symbolTable.lookupSymbol(symbolName);
-        // if (symbol) {
-        //     cout << "\n[Scope Lookup] Found in scope structure:\n";
-        //     symbol->print();
-        // } else {
-        //     cout << "\n[Scope Lookup] Symbol '" << symbolName << "' not found in scope structure\n";
-        // }
-    }
+    ErrorDetection ErrorDetector(testCode, &symbolTable);
+    ErrorDetector.PrintDetectedErrors();
     
     cout << "\nThank you for using Java-- Compiler!\n";
     return 0;
