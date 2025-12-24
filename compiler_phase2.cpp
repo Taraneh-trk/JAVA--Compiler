@@ -694,6 +694,7 @@ public:
             
             string name = sym["name"];
             string symbolType = sym["symbolType"];
+            string symbol_line = sym["line"];
             string scopeName = sym.count("scope") ? sym["scope"] : "GLOBAL";
             
             // Create unique key to prevent processing duplicates
@@ -716,6 +717,7 @@ public:
                 classInfo.name = name;
                 classInfo.id_kind = kind;
                 classInfo.scope = scopeName;
+                classInfo.line = stoi(symbol_line);
                 classInfo.IndexInSymbolTable = to_string(i);
                 
                 if (sym.count("parent") && sym["parent"] != "null") {
@@ -733,6 +735,7 @@ public:
                 intInfo.name = name;
                 intInfo.id_kind = kind;
                 intInfo.scope = scopeName;
+                intInfo.line = stoi(symbol_line);
                 intInfo.IndexInSymbolTable = to_string(i);
                 
                 Symbol s(intInfo, kind);
@@ -743,6 +746,7 @@ public:
                 methodInfo.name = name;
                 methodInfo.id_kind = kind;
                 methodInfo.scope = scopeName;
+                methodInfo.line = stoi(symbol_line);
                 methodInfo.IndexInSymbolTable = to_string(i);
                 
                 if (sym.count("returnType")) methodInfo.returnType.name = sym["returnType"];
@@ -779,6 +783,7 @@ public:
                 ctorInfo.name = name;
                 ctorInfo.id_kind = kind;
                 ctorInfo.scope = scopeName;
+                ctorInfo.line = stoi(symbol_line);
                 ctorInfo.IndexInSymbolTable = to_string(i);
                 
                 if (sym.count("access")) ctorInfo.accessModifier = sym["access"];
@@ -812,6 +817,7 @@ public:
                 varInfo.name = name;
                 varInfo.id_kind = kind;
                 varInfo.scope = scopeName;
+                varInfo.line = stoi(symbol_line);
                 varInfo.IndexInSymbolTable = to_string(i);
                 
                 if (sym.count("dataType")) varInfo.type.name = sym["dataType"];
@@ -828,6 +834,7 @@ public:
                 fieldInfo.name = name;
                 fieldInfo.id_kind = kind;
                 fieldInfo.scope = scopeName;
+                fieldInfo.line = stoi(symbol_line);
                 fieldInfo.IndexInSymbolTable = to_string(i);
                 
                 if (sym.count("dataType")) fieldInfo.type.name = sym["dataType"];
@@ -844,6 +851,7 @@ public:
                 paramInfo.name = name;
                 paramInfo.id_kind = kind;
                 paramInfo.scope = scopeName;
+                paramInfo.line = stoi(symbol_line);
                 paramInfo.IndexInSymbolTable = to_string(i);
                 
                 if (sym.count("dataType")) paramInfo.type.name = sym["dataType"];
@@ -1038,7 +1046,7 @@ class Error{
         }
 
         void PrintError(){
-            cout<<"\nError happened in line "<< this->error_line<<'\n';
+            cout<<"\n[Error] Error happened in line "<< this->error_line<<'\n';
             cout<<"Error Type is {  " << tostring(this->error_type) <<"  }  \n";
         }
 };
@@ -1068,6 +1076,8 @@ class ErrorDetection {
                 ans.push_back(Error(err.first,ErrorType::DuplicateVariableInScope));
                 error_num++;
             }
+
+
 
             return ans;
         }

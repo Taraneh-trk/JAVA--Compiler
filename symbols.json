@@ -2,6 +2,7 @@
   {
     "parent": null,
     "interfaces": [],
+    "line": 1,
     "scope": "GLOBAL",
     "name": "HelloWorld",
     "isAbstract": false,
@@ -9,11 +10,13 @@
   },
   {
     "access": "public",
+    "line": 1,
     "scope": "HelloWorld",
     "name": "main",
     "isOverride": false,
     "isAbstract": false,
     "parameters": [{
+      "line": 1,
       "dataType": "String[]",
       "scope": "HelloWorld::main",
       "name": "args",
@@ -23,6 +26,7 @@
     "returnType": "void"
   },
   {
+    "line": 1,
     "dataType": "String[]",
     "scope": "HelloWorld::main",
     "name": "args",
@@ -30,14 +34,16 @@
   },
   {
     "access": "local",
+    "line": 3,
     "dataType": "String",
     "scope": "HelloWorld::main",
     "name": "message",
-    "initialValue": "Hello World",
+    "initialValue": "\"Hello World\"",
     "symbolType": "variable"
   },
   {
     "access": "local",
+    "line": 4,
     "dataType": "String",
     "scope": "HelloWorld::main",
     "name": "message",
