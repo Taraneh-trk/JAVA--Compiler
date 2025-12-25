@@ -1,17 +1,17 @@
-#include <iostream>        
-#include <string>          
-#include <vector>          
-#include <unordered_map>   
-#include <unordered_set>  
-#include <set>  
-#include <memory>          
-#include <utility>         
-#include <iomanip>         
-#include <sstream>         
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <set>
+#include <memory>
+#include <utility>
+#include <iomanip>
+#include <sstream>
 #include <optional>
 #include <fstream>
 #include <algorithm>
-#include <cctype>   
+#include <cctype>
 #include <cstdlib>
 
 using namespace std;
@@ -29,98 +29,98 @@ class SimpleJSON {
                     cerr << "[Error] Cannot open file: " << filename << "\n";
                     return false;
                 }
-                
+
                 string content_((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
                 content = content_;
                 file.close();
             } else {
                 content = content_recive;
             }
-            
+
             if (content.empty()) {
                 cerr << "[Warning] JSON file is empty\n";
                 return true;
             }
-            
+
             size_t startPos = 0;
             size_t endPos = content.size();
-            
+
             size_t arrayStart = content.find('[');
             if (arrayStart != string::npos) {
                 startPos = arrayStart + 1;
             }
-            
+
             size_t arrayEnd = content.find_last_of(']');
             if (arrayEnd != string::npos && arrayEnd > startPos) {
                 endPos = arrayEnd;
             }
-            
+
             string cleanContent = content.substr(startPos, endPos - startPos);
-            
+
             size_t pos = 0;
             while (pos < cleanContent.size()) {
                 while (pos < cleanContent.size() && isspace(cleanContent[pos])) pos++;
                 if (pos >= cleanContent.size()) break;
-                
+
                 size_t objStart = cleanContent.find('{', pos);
                 if (objStart == string::npos) break;
-                
+
                 size_t objEnd = findMatchingBrace(cleanContent, objStart);
                 if (objEnd == string::npos) break;
-                
+
                 string objStr = cleanContent.substr(objStart + 1, objEnd - objStart - 1);
                 unordered_map<string, string> obj;
-                
+
                 if (!parseObject(objStr, obj)) {
                     pos = objEnd + 1;
                     continue;
                 }
-                
+
                 if (!obj.empty()) {
                     symbols.push_back(obj);
                 }
-                
+
                 pos = objEnd + 1;
             }
-            
+
             cout << "[Info] Parsed " << symbols.size() << " symbols from JSON\n";
             return true;
         }
-        
+
     private:
         static size_t findMatchingBrace(const string& str, size_t start) {
             int count = 1;
             for (size_t i = start + 1; i < str.size(); i++) {
                 if (str[i] == '{') count++;
                 else if (str[i] == '}') count--;
-                
+
                 if (count == 0) return i;
             }
             return string::npos;
         }
-        
+
         static bool parseObject(const string& objStr, unordered_map<string, string>& obj) {
             size_t pos = 0;
             while (pos < objStr.size()) {
                 // Find key
                 size_t keyStart = objStr.find('"', pos);
                 if (keyStart == string::npos) break;
-                
+
                 size_t keyEnd = objStr.find('"', keyStart + 1);
                 if (keyEnd == string::npos) break;
-                
+
                 string key = objStr.substr(keyStart + 1, keyEnd - keyStart - 1);
-                
+
                 // Find colon
                 size_t colonPos = objStr.find(':', keyEnd);
                 if (colonPos == string::npos) break;
-                
+
                 // Find value
                 size_t valueStart = colonPos + 1;
                 while (valueStart < objStr.size() && isspace(objStr[valueStart])) valueStart++;
-                
+
                 if (valueStart >= objStr.size()) break;
-                
+
                 string value;
                 if (objStr[valueStart] == '"') {
                     // String value
@@ -129,7 +129,7 @@ class SimpleJSON {
                     value = objStr.substr(valueStart + 1, valueEnd - valueStart - 1);
                     pos = valueEnd + 1;
                 } else if (objStr[valueStart] == '[') {
-                    // Array value 
+                    // Array value
                     size_t arrayEnd = findMatchingBracket(objStr, valueStart);
                     if (arrayEnd == string::npos) break;
                     value = objStr.substr(valueStart, arrayEnd - valueStart + 1);
@@ -145,7 +145,7 @@ class SimpleJSON {
                     size_t valueEnd = objStr.find_first_of(",}", valueStart);
                     if (valueEnd == string::npos) valueEnd = objStr.size();
                     value = objStr.substr(valueStart, valueEnd - valueStart);
-                    
+
                     // Trim whitespace
                     size_t start = value.find_first_not_of(" \t\n\r");
                     size_t end = value.find_last_not_of(" \t\n\r");
@@ -156,11 +156,11 @@ class SimpleJSON {
                     }
                     pos = valueEnd;
                 }
-                
+
                 if (!key.empty() && !value.empty()) {
                     obj[key] = value;
                 }
-                
+
                 // Find next comma
                 size_t commaPos = objStr.find(',', pos);
                 if (commaPos == string::npos) break;
@@ -168,13 +168,13 @@ class SimpleJSON {
             }
             return true;
         }
-        
+
         static size_t findMatchingBracket(const string& str, size_t start) {
             int count = 1;
             for (size_t i = start + 1; i < str.size(); i++) {
                 if (str[i] == '[') count++;
                 else if (str[i] == ']') count--;
-                
+
                 if (count == 0) return i;
             }
             return string::npos;
@@ -201,10 +201,10 @@ enum class IdentifierKind {
 };
 
 struct TypeInfo {
-    string name;      
-    bool isArray = false;  
-    int dimensions = 0;    
-    
+    string name;
+    bool isArray = false;
+    int dimensions = 0;
+
     TypeInfo() = default;
     TypeInfo(const string& n) : name(n) {}
 };
@@ -228,7 +228,7 @@ struct IdentifierBase : public ISymbol {
     string getName() const override {
         return this->name;
     }
-    
+
     string getScope() const override {
         return this->scope;
     }
@@ -242,7 +242,7 @@ struct IdentifierBase : public ISymbol {
     }
 
     void print() const override {
-        cout << "Identifier: " << name 
+        cout << "Identifier: " << name
              << " (" << static_cast<int>(id_kind) << ")"
              << " Scope: " << scope
              << " @(" << line << "," << col << ")\n";
@@ -276,7 +276,7 @@ struct ParameterInfo : public IdentifierBase {
     ParameterInfo() {
         id_kind = IdentifierKind::Parameter;
     }
-    
+
     ParameterInfo(const string& n, const string& t, const string& s) {
         name = n;
         type.name = t;
@@ -292,7 +292,7 @@ struct ParameterInfo : public IdentifierBase {
 struct MethodInfo : public IdentifierBase {
     TypeInfo returnType;
     string accessModifier;
-    vector<ParameterInfo> parameters; 
+    vector<ParameterInfo> parameters;
     bool isAbstract = false;
     bool isOverride = false;
 
@@ -302,14 +302,14 @@ struct MethodInfo : public IdentifierBase {
 
     void print() const override {
         cout << "[Method] " << name << " -> " << returnType.name << " (scope: " << scope << ")";
-        if (isAbstract) 
+        if (isAbstract)
             cout << " (abstract)";
-        if (isOverride) 
+        if (isOverride)
             cout << " (override)";
         if (!accessModifier.empty())
             cout << " (" << accessModifier << ")";
         cout << "\n";
-        
+
         if (!parameters.empty()) {
             cout << "              " << "  Parameters:\n";
             for (const auto& param : parameters) {
@@ -332,7 +332,7 @@ struct VariableInfo : public IdentifierBase {
         cout << "[Variable] " << name << " : " << type.name << " (scope: " << scope << ")";
         if (!IndexInSymbolTable.empty())
             cout << " (index: " << IndexInSymbolTable << ")";
-        if (!initialValue.empty() && initialValue != "null") 
+        if (!initialValue.empty() && initialValue != "null")
             cout << " = " << initialValue;
         if (!accessModifier.empty())
             cout << " (" << accessModifier << ")";
@@ -349,7 +349,7 @@ struct FieldInfo : public VariableInfo {
         cout << "[Field] " << name << " : " << type.name << " (scope: " << scope << ")";
         if (!accessModifier.empty())
             cout << " (" << accessModifier << ")";
-        if (!initialValue.empty() && initialValue != "null") 
+        if (!initialValue.empty() && initialValue != "null")
             cout << " = " << initialValue;
         cout << "\n";
     }
@@ -390,18 +390,18 @@ struct Symbol {
     }
 
     void print() const {
-        if (data) 
+        if (data)
             data->print();
-        else 
+        else
             cout << "[Empty Symbol]\n";
     }
 
     string getName() const {
-        if (!data) 
+        if (!data)
             return "";
         return data->getName();
     }
-    
+
     string getScope() const {
         if (!data)
             return "";
@@ -409,13 +409,13 @@ struct Symbol {
     }
 
     string getIndexInSymbolTable() const {
-        if (!data) 
+        if (!data)
             return "";
         return data->getIndexInSymbolTable();
     }
 
     size_t getLineInCode() const {
-        if (!data) 
+        if (!data)
             return 0;
         return data->getLineInCode();
     }
@@ -435,7 +435,7 @@ private:
         } else {
             fullPath = name;
         }
-        
+
         for (auto& child : children) {
             child->updateFullPath();
         }
@@ -453,15 +453,15 @@ public:
     bool insert(const Symbol& sym) {
         string idName = sym.getName();
         string symbolScope = sym.getScope();
-        
+
         if (idName.empty()) {
             cerr << "[Error] Symbol without name in scope '" << fullPath << "'\n";
             return false;
         }
-        
+
         // Allow duplicate names in different scopes
         string uniqueKey = idName + "@" + symbolScope;
-        
+
         if (symbols.count(idName)) {
             // Check if it's truly a duplicate (same name, same scope)
             if (symbols[idName].getScope() == symbolScope) {
@@ -473,7 +473,7 @@ public:
                 return false;
             }
         }
-        
+
         symbols[idName] = sym;
         return true;
     }
@@ -483,7 +483,7 @@ public:
         if (it != symbols.end()) {
             return &(it->second);
         }
-        
+
         Scope* currentParent = parent;
         while (currentParent) {
             auto parentIt = currentParent->symbols.find(target);
@@ -492,7 +492,7 @@ public:
             }
             currentParent = currentParent->parent;
         }
-        
+
         return nullptr;
     }
 
@@ -510,7 +510,7 @@ public:
                 return child.get();
             }
         }
-        
+
         auto child = make_unique<Scope>(childName, this);
         Scope* ptr = child.get();
         children.push_back(move(child));
@@ -538,12 +538,12 @@ public:
     void dump(int indent = 0) const {
         string pad(indent, ' ');
         cout << pad << "Scope: " << name << " (full: " << fullPath << ")\n";
-        
+
         for (const auto& [id, sym] : symbols) {
             cout << pad << "  - ";
             sym.print();
         }
-        
+
         for (const auto& child : children) {
             child->dump(indent + 4);
         }
@@ -564,7 +564,7 @@ private:
     Scope* current;
     vector<unordered_map<string, string>> symbolsData;
     unordered_map<string, int> nameToIndex;
-    
+
     static string IdentifierKindToString(IdentifierKind k) {
         switch (k) {
             case IdentifierKind::Class: return "class";
@@ -578,7 +578,7 @@ private:
             default: return "unknown";
         }
     }
-    
+
     static IdentifierKind stringToIdentifierKind(const string& str) {
         if (str == "class") return IdentifierKind::Class;
         if (str == "interface") return IdentifierKind::Interface;
@@ -590,12 +590,12 @@ private:
         if (str == "mainclass") return IdentifierKind::MainClass;
         return IdentifierKind::Variable;
     }
-    
+
     Scope* ensureScope(const string& scopeName) {
         if (scopeName == "GLOBAL") {
             return global.get();
         }
-        
+
         vector<string> scopeParts;
         stringstream ss(scopeName);
         string part;
@@ -604,7 +604,7 @@ private:
                 scopeParts.push_back(part);
             }
         }
-        
+
         Scope* targetScope = global.get();
         for (const auto& part : scopeParts) {
             Scope* nextScope = targetScope->getChild(part);
@@ -613,60 +613,60 @@ private:
             }
             targetScope = nextScope;
         }
-        
+
         return targetScope;
     }
-    
+
     vector<ParameterInfo> parseParameters(const string& paramsStr, const string& parentScope) {
         vector<ParameterInfo> params;
-        
+
         if (paramsStr.empty() || paramsStr == "[]") {
             return params;
         }
-        
+
         vector<unordered_map<string, string>> paramData;
         SimpleJSON::parseSymbols(paramsStr, paramData);
-        
+
         for (const auto& param : paramData) {
             if (param.count("name")) {
                 ParameterInfo paramInfo;
                 paramInfo.name = param.at("name");
-                
+
                 if (param.count("dataType")) {
                     paramInfo.type.name = param.at("dataType");
                 } else if (param.count("type")) {
                     paramInfo.type.name = param.at("type");
                 }
-                
+
                 if (param.count("scope")) {
                     paramInfo.scope = param.at("scope");
                 } else {
                     paramInfo.scope = parentScope;
                 }
-                
+
                 paramInfo.id_kind = IdentifierKind::Parameter;
                 params.push_back(paramInfo);
             }
         }
-        
+
         return params;
     }
-    
+
 public:
     SymbolTable() {
         global = make_unique<Scope>("GLOBAL");
         current = global.get();
     }
-    
+
     bool loadFromJSON(const string& filename) {
         symbolsData.clear();
         nameToIndex.clear();
-        
+
         if (!SimpleJSON::parseSymbols("", symbolsData, filename)) {
             cerr << "[Error] Failed to parse JSON file: " << filename << "\n";
             return false;
         }
-        
+
         // First pass: Create all scopes
         cout << "[Info] Creating scope hierarchy...\n";
         set<string> createdScopes;
@@ -679,39 +679,39 @@ public:
                 }
             }
         }
-        
+
         // Second pass: Insert symbols
         cout << "[Info] Inserting symbols...\n";
         set<string> processedSymbols;
         int successCount = 0;
-        
+
         for (size_t i = 0; i < symbolsData.size(); i++) {
             auto& sym = symbolsData[i];
-            
+
             if (!sym.count("name") || !sym.count("symbolType")) {
                 continue;
             }
-            
+
             string name = sym["name"];
             string symbolType = sym["symbolType"];
             string symbol_line = sym["line"];
             string scopeName = sym.count("scope") ? sym["scope"] : "GLOBAL";
-            
+
             // Create unique key to prevent processing duplicates
             // string uniqueKey = name + "@" + scopeName + "@" + symbolType;
-            
+
             // if (processedSymbols.count(uniqueKey)) {
             //     continue;
             // }
             // processedSymbols.insert(uniqueKey);
-            
+
             IdentifierKind kind = stringToIdentifierKind(symbolType);
             Scope* targetScope = ensureScope(scopeName);
             Scope* previousCurrent = current;
             current = targetScope;
-            
+
             bool success = false;
-            
+
             if (kind == IdentifierKind::Class || kind == IdentifierKind::MainClass) {
                 ClassInfo classInfo;
                 classInfo.name = name;
@@ -719,17 +719,17 @@ public:
                 classInfo.scope = scopeName;
                 classInfo.line = stoi(symbol_line);
                 classInfo.IndexInSymbolTable = to_string(i);
-                
+
                 if (sym.count("parent") && sym["parent"] != "null") {
                     classInfo.parentClass = sym["parent"];
                 }
                 if (sym.count("isAbstract")) {
                     classInfo.isAbstract = (sym["isAbstract"] == "true");
                 }
-                
+
                 Symbol s(classInfo, kind);
                 success = insertSymbol(s);
-            } 
+            }
             else if (kind == IdentifierKind::Interface) {
                 InterfaceInfo intInfo;
                 intInfo.name = name;
@@ -737,7 +737,7 @@ public:
                 intInfo.scope = scopeName;
                 intInfo.line = stoi(symbol_line);
                 intInfo.IndexInSymbolTable = to_string(i);
-                
+
                 Symbol s(intInfo, kind);
                 success = insertSymbol(s);
             }
@@ -748,26 +748,26 @@ public:
                 methodInfo.scope = scopeName;
                 methodInfo.line = stoi(symbol_line);
                 methodInfo.IndexInSymbolTable = to_string(i);
-                
+
                 if (sym.count("returnType")) methodInfo.returnType.name = sym["returnType"];
                 if (sym.count("access")) methodInfo.accessModifier = sym["access"];
                 if (sym.count("isAbstract")) methodInfo.isAbstract = (sym["isAbstract"] == "true");
                 if (sym.count("isOverride")) methodInfo.isOverride = (sym["isOverride"] == "true");
-                
+
                 // Parse parameters
                 if (sym.count("parameters")) {
                     string methodScopeName = scopeName + "::" + name;
                     methodInfo.parameters = parseParameters(sym["parameters"], methodScopeName);
                 }
-                
+
                 Symbol s(methodInfo, kind);
                 success = insertSymbol(s);
-                
+
                 // Insert parameters in method scope
                 Scope* methodScope = current->addChild(name);
                 Scope* prevScope = current;
                 current = methodScope;
-                
+
                 for (const auto& param : methodInfo.parameters) {
                     Symbol paramSymbol(param, IdentifierKind::Parameter);
                     current->insert(paramSymbol);
@@ -775,7 +775,7 @@ public:
                     nameToIndex[param.name + param.scope] = static_cast<int>(successCount);
                     successCount++;
                 }
-                
+
                 current = prevScope;
             }
             else if (kind == IdentifierKind::Constructor) {
@@ -785,23 +785,23 @@ public:
                 ctorInfo.scope = scopeName;
                 ctorInfo.line = stoi(symbol_line);
                 ctorInfo.IndexInSymbolTable = to_string(i);
-                
+
                 if (sym.count("access")) ctorInfo.accessModifier = sym["access"];
-                
+
                 // Parse parameters
                 if (sym.count("parameters")) {
                     string ctorScopeName = scopeName + "::" + name;
                     ctorInfo.parameters = parseParameters(sym["parameters"], ctorScopeName);
                 }
-                
+
                 Symbol s(ctorInfo, kind);
                 success = insertSymbol(s);
-                
+
                 // Insert parameters in constructor scope
                 Scope* ctorScope = current->addChild(name);
                 Scope* prevScope = current;
                 current = ctorScope;
-                
+
                 for (const auto& param : ctorInfo.parameters) {
                     Symbol paramSymbol(param, IdentifierKind::Parameter);
                     current->insert(paramSymbol);
@@ -809,7 +809,7 @@ public:
                     nameToIndex[param.name + param.scope] = static_cast<int>(successCount);
                     successCount++;
                 }
-                
+
                 current = prevScope;
             }
             else if (kind == IdentifierKind::Variable) {
@@ -819,16 +819,16 @@ public:
                 varInfo.scope = scopeName;
                 varInfo.line = stoi(symbol_line);
                 varInfo.IndexInSymbolTable = to_string(i);
-                
+
                 if (sym.count("dataType")) varInfo.type.name = sym["dataType"];
                 if (sym.count("initialValue") && sym["initialValue"] != "null") {
                     varInfo.initialValue = sym["initialValue"];
                 }
                 if (sym.count("access")) varInfo.accessModifier = sym["access"];
-                
+
                 Symbol s(varInfo, kind);
                 success = insertSymbol(s);
-            } 
+            }
             else if (kind == IdentifierKind::Field) {
                 FieldInfo fieldInfo;
                 fieldInfo.name = name;
@@ -836,16 +836,16 @@ public:
                 fieldInfo.scope = scopeName;
                 fieldInfo.line = stoi(symbol_line);
                 fieldInfo.IndexInSymbolTable = to_string(i);
-                
+
                 if (sym.count("dataType")) fieldInfo.type.name = sym["dataType"];
                 if (sym.count("initialValue") && sym["initialValue"] != "null") {
                     fieldInfo.initialValue = sym["initialValue"];
                 }
                 if (sym.count("access")) fieldInfo.accessModifier = sym["access"];
-                
+
                 Symbol s(fieldInfo, kind);
                 success = insertSymbol(s);
-            } 
+            }
             else if (kind == IdentifierKind::Parameter) {
                 ParameterInfo paramInfo;
                 paramInfo.name = name;
@@ -853,22 +853,22 @@ public:
                 paramInfo.scope = scopeName;
                 paramInfo.line = stoi(symbol_line);
                 paramInfo.IndexInSymbolTable = to_string(i);
-                
+
                 if (sym.count("dataType")) paramInfo.type.name = sym["dataType"];
                 if (sym.count("type")) paramInfo.type.name = sym["type"];
-                
+
                 Symbol s(paramInfo, kind);
                 success = insertSymbol(s);
             }
-            
+
             current = previousCurrent;
-            
+
             if (success) {
                 nameToIndex[name+scopeName] = static_cast<int>(successCount);
                 successCount++;
             }
         }
-        
+
         cout << "[Info] Successfully loaded " << successCount << " symbols from JSON file\n";
         return true;
     }
@@ -911,32 +911,32 @@ public:
         global->dump();
         cout << "=====================================================================\n\n";
     }
-    
+
     void printSymbolsTable() const {
         cout << "\n==================== Symbol Table ====================\n";
-        cout << left << setw(6) << "Index" 
-             << setw(20) << "Name" 
-             << setw(15) << "Kind" 
+        cout << left << setw(6) << "Index"
+             << setw(20) << "Name"
+             << setw(15) << "Kind"
              << setw(15) << "Type"
-             << setw(25) << "Scope" 
+             << setw(25) << "Scope"
              << setw(15) << "Initial Value" << "\n";
         cout << string(96, '-') << "\n";
-        
+
         for (size_t i = 0; i < symbolsData.size(); ++i) {
             const auto& sym = symbolsData[i];
-            
+
             string name = sym.count("name") ? sym.at("name") : "N/A";
             string kind = sym.count("symbolType") ? sym.at("symbolType") : "N/A";
             string type = "N/A";
             string scope = sym.count("scope") ? sym.at("scope") : "GLOBAL";
             string initialValue = sym.count("initialValue") ? sym.at("initialValue") : "N/A";
-            
+
             if (sym.count("dataType")) {
                 type = sym.at("dataType");
             } else if (sym.count("returnType")) {
                 type = sym.at("returnType");
             }
-            
+
             cout << left << setw(6) << i
                  << setw(20) << (name.length() > 19 ? name.substr(0, 17) + ".." : name)
                  << setw(15) << (kind.length() > 14 ? kind.substr(0, 12) + ".." : kind)
@@ -946,7 +946,7 @@ public:
         }
         cout << "======================================================\n\n";
     }
-    
+
     // optional<unordered_map<string, string>> lookup(const string& identName,const string& scope) const {
     //     auto it = nameToIndex.find(identName+scope);
     //     if (it != nameToIndex.end() && it->second < symbolsData.size()) {
@@ -959,33 +959,33 @@ public:
         if (scopeName.empty() || scopeName == "GLOBAL") {
             return global.get();
         }
-        
+
         vector<string> scopeParts;
         stringstream ss(scopeName);
         string part;
-        
+
         while (getline(ss, part, ':')) {
             if (!part.empty()) {
                 scopeParts.push_back(part);
             }
         }
-        
+
         if (scopeParts.empty()) {
             return global.get();
         }
-        
+
         Scope* currentScope = global.get();
-        
+
         for (const auto& part : scopeParts) {
             Scope* nextScope = currentScope->getChild(part);
             if (!nextScope) {
-                cerr << "[Error] Scope '" << part << "' not found in hierarchy. Current path: " 
+                cerr << "[Error] Scope '" << part << "' not found in hierarchy. Current path: "
                     << currentScope->getFullPath() << "\n";
                 return nullptr;
             }
             currentScope = nextScope;
         }
-        
+
         return currentScope;
     }
 
@@ -1069,7 +1069,7 @@ class ErrorDetection {
 
             /*
                 This section was added to the symbol table module because the project specification
-                 states that duplicate variables must not be printed in the symbol table. 
+                 states that duplicate variables must not be printed in the symbol table.
                 In this part, the results of the checks performed within that module are used.
             */
             for(auto err : InProcessError){
@@ -1085,7 +1085,7 @@ class ErrorDetection {
         vector<Error> Detect_Method_Call_Signature_Mismatch(){
             vector<Error> ans;
             size_t error_num=0;
-            
+
 
             return ans;
         }
@@ -1093,7 +1093,7 @@ class ErrorDetection {
         vector<Error> Detect_Return_Type_Mismatch(){
             vector<Error> ans;
             size_t error_num=0;
-            
+
 
             return ans;
         }
@@ -1101,7 +1101,44 @@ class ErrorDetection {
         vector<Error> Detect_Cyclic_Inheritance(){
             vector<Error> ans;
             size_t error_num=0;
-            
+
+            unordered_map<string, string> parentOf;
+            unordered_map<string, size_t> classLine;
+
+            for (const auto& sym : symTable.symbolsData) {
+                if (sym.at("symbolType") == "class") {
+
+                    string className = sym.at("name");
+                    string parent = "null";
+
+                    if (sym.count("parent") && sym.at("parent") != "null")
+                        parent = sym.at("parent");
+
+                    parentOf[className] = parent;
+                    classLine[className] = stoi(sym.at("line"));
+                }
+            }
+
+            unordered_set<string> reported;
+
+            for (const auto& [cls, _] : parentOf) {
+                unordered_set<string> visited;
+                string current = cls;
+
+                while (parentOf.count(current) && parentOf[current] != "null") {
+                    if (visited.count(current)) {
+                        if (!reported.count(current)) {
+                            ans.push_back(Error(classLine[current], ErrorType::CyclicInheritance));
+                            error_num++;
+                            reported.insert(current);
+                        }
+                        break;
+                    }
+
+                    visited.insert(current);
+                    current = parentOf[current];
+                }
+            }
 
             return ans;
         }
@@ -1109,7 +1146,7 @@ class ErrorDetection {
         vector<Error> Detect_Invalid_Variable_Access(){
             vector<Error> ans;
             size_t error_num=0;
-            
+
 
             return ans;
         }
@@ -1168,29 +1205,29 @@ int main() {
     cout << "========================================================================\n\n";
 
     SymbolTable symbolTable;
-    
+
     cout << "Loading symbol table from symbols.json...\n";
     if (!symbolTable.loadFromJSON("symbols.json")) {
         cerr << "[Error] Failed to load symbols.json\n";
         cerr << "Creating empty symbol table for demonstration...\n";
     }
-    
+
     symbolTable.printSymbolsTable();
 
-    ifstream file("input.txt");  
-    if (!file.is_open()) {       
+    ifstream file("input.txt");
+    if (!file.is_open()) {
         cerr << "Error: cannot open file." << endl;
         return 1;
     }
-    stringstream buffer_input;         
-    buffer_input << file.rdbuf();      
+    stringstream buffer_input;
+    buffer_input << file.rdbuf();
     string testCode = buffer_input.str();
 
     symbolTable.dump();
 
     ErrorDetection ErrorDetector(testCode, &symbolTable);
     ErrorDetector.PrintDetectedErrors();
-    
+
     cout << "\nThank you for using Java-- Compiler!\n";
     return 0;
 }
