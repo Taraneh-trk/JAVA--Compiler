@@ -1,7 +1,38 @@
-class HelloWorld {
+class Main {
     public static void main(String [] args) {
-        String message = "Hello World";
-	String message = "bye World";
-        print(message);
+        A a;
+        int x;
+        int x;
+
+        a = new A();
+	//int k = a.foo(1, true);
+
+        x = y + 1;
+
     }
+}
+
+class A extends B {
+    int f;
+    
+    public int foo(int a, boolean b) {
+        int z;
+        z = a + f;
+        return b;
+    }
+
+    public int bar(int p) {
+        if (p < 10) {
+            int t;
+            t = p + 1;
+        }
+        t = p + 2;
+        return p;
+    }
+}
+
+class B extends C {
+}
+
+class C extends A {
 }

@@ -2,23 +2,20 @@
   {
     "parent": null,
     "interfaces": [],
-    "line": 1,
     "scope": "GLOBAL",
-    "name": "HelloWorld",
+    "name": "Main",
     "isAbstract": false,
     "symbolType": "class"
   },
   {
     "access": "public",
-    "line": 1,
-    "scope": "HelloWorld",
+    "scope": "Main",
     "name": "main",
     "isOverride": false,
     "isAbstract": false,
     "parameters": [{
-      "line": 1,
       "dataType": "String[]",
-      "scope": "HelloWorld::main",
+      "scope": "Main::main",
       "name": "args",
       "symbolType": "parameter"
     }],
@@ -26,28 +23,137 @@
     "returnType": "void"
   },
   {
-    "line": 1,
     "dataType": "String[]",
-    "scope": "HelloWorld::main",
+    "scope": "Main::main",
     "name": "args",
     "symbolType": "parameter"
   },
   {
     "access": "local",
-    "line": 3,
-    "dataType": "String",
-    "scope": "HelloWorld::main",
-    "name": "message",
-    "initialValue": "\"Hello World\"",
+    "dataType": "A",
+    "scope": "Main::main",
+    "name": "a",
+    "initialValue": "null",
     "symbolType": "variable"
   },
   {
     "access": "local",
-    "line": 4,
-    "dataType": "String",
-    "scope": "HelloWorld::main",
-    "name": "message",
-    "initialValue": "bye World",
+    "dataType": "int",
+    "scope": "Main::main",
+    "name": "x",
+    "initialValue": "null",
     "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "dataType": "int",
+    "scope": "Main::main",
+    "name": "x",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "parent": "B",
+    "interfaces": [],
+    "scope": "GLOBAL",
+    "name": "A",
+    "isAbstract": false,
+    "symbolType": "class"
+  },
+  {
+    "access": "default",
+    "dataType": "int",
+    "scope": "A",
+    "name": "f",
+    "initialValue": "null",
+    "symbolType": "field"
+  },
+  {
+    "dataType": "int",
+    "scope": "A::foo",
+    "name": "a",
+    "symbolType": "parameter"
+  },
+  {
+    "dataType": "boolean",
+    "scope": "A::foo",
+    "name": "b",
+    "symbolType": "parameter"
+  },
+  {
+    "access": "public",
+    "scope": "A",
+    "name": "foo",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [
+      {
+        "dataType": "int",
+        "scope": "A::foo",
+        "name": "a",
+        "symbolType": "parameter"
+      },
+      {
+        "dataType": "boolean",
+        "scope": "A::foo",
+        "name": "b",
+        "symbolType": "parameter"
+      }
+    ],
+    "symbolType": "method",
+    "returnType": "int"
+  },
+  {
+    "access": "local",
+    "dataType": "int",
+    "scope": "A::foo",
+    "name": "z",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "dataType": "int",
+    "scope": "A::bar",
+    "name": "p",
+    "symbolType": "parameter"
+  },
+  {
+    "access": "public",
+    "scope": "A",
+    "name": "bar",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [{
+      "dataType": "int",
+      "scope": "A::bar",
+      "name": "p",
+      "symbolType": "parameter"
+    }],
+    "symbolType": "method",
+    "returnType": "int"
+  },
+  {
+    "access": "local",
+    "dataType": "int",
+    "scope": "A::bar::BLOCK#1",
+    "name": "t",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "parent": "C",
+    "interfaces": [],
+    "scope": "GLOBAL",
+    "name": "B",
+    "isAbstract": false,
+    "symbolType": "class"
+  },
+  {
+    "parent": "A",
+    "interfaces": [],
+    "scope": "GLOBAL",
+    "name": "C",
+    "isAbstract": false,
+    "symbolType": "class"
   }
 ]
