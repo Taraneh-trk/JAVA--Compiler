@@ -51,45 +51,122 @@
     },
     {
       "declared_at": "GLOBAL::A::bar",
-      "declared_line": 24,
-      "line": 25,
+      "declared_line": 30,
+      "line": 31,
+      "usage_location": "GLOBAL::A::bar",
+      "variable_name": "currentResult"
+    },
+    {
+      "declared_at": "None",
+      "declared_line": -1,
+      "line": 31,
+      "usage_location": "GLOBAL::A::bar",
+      "variable_name": "calc"
+    },
+    {
+      "declared_at": "GLOBAL::A::bar",
+      "declared_line": 30,
+      "line": 32,
+      "usage_location": "GLOBAL::A::bar",
+      "variable_name": "currentResult"
+    },
+    {
+      "declared_at": "None",
+      "declared_line": -1,
+      "line": 32,
+      "usage_location": "GLOBAL::A::bar",
+      "variable_name": "calc"
+    },
+    {
+      "declared_at": "GLOBAL::A::bar",
+      "declared_line": 28,
+      "line": 34,
       "usage_location": "GLOBAL::A::bar",
       "variable_name": "p"
     },
     {
       "declared_at": "GLOBAL::A::bar",
-      "declared_line": 26,
-      "line": 27,
+      "declared_line": 35,
+      "line": 36,
       "usage_location": "GLOBAL::A::bar",
       "variable_name": "t"
     },
     {
       "declared_at": "GLOBAL::A::bar",
-      "declared_line": 24,
-      "line": 27,
+      "declared_line": 28,
+      "line": 36,
       "usage_location": "GLOBAL::A::bar",
       "variable_name": "p"
     },
     {
       "declared_at": "GLOBAL::A::bar",
-      "declared_line": 26,
-      "line": 29,
+      "declared_line": 35,
+      "line": 38,
       "usage_location": "GLOBAL::A::bar",
       "variable_name": "t"
     },
     {
       "declared_at": "GLOBAL::A::bar",
-      "declared_line": 24,
-      "line": 29,
+      "declared_line": 28,
+      "line": 38,
       "usage_location": "GLOBAL::A::bar",
       "variable_name": "p"
     },
     {
       "declared_at": "GLOBAL::A::bar",
-      "declared_line": 24,
-      "line": 30,
+      "declared_line": 28,
+      "line": 39,
       "usage_location": "GLOBAL::A::bar",
       "variable_name": "p"
+    },
+    {
+      "declared_at": "None",
+      "declared_line": -1,
+      "line": 46,
+      "usage_location": "GLOBAL::A::saveToMemory",
+      "variable_name": "memory"
+    },
+    {
+      "declared_at": "GLOBAL::A::addAndSave",
+      "declared_line": 51,
+      "line": 52,
+      "usage_location": "GLOBAL::A::addAndSave",
+      "variable_name": "sum"
+    },
+    {
+      "declared_at": "GLOBAL::A::addAndSave",
+      "declared_line": 50,
+      "line": 52,
+      "usage_location": "GLOBAL::A::addAndSave",
+      "variable_name": "x"
+    },
+    {
+      "declared_at": "GLOBAL::A::addAndSave",
+      "declared_line": 50,
+      "line": 52,
+      "usage_location": "GLOBAL::A::addAndSave",
+      "variable_name": "y"
+    },
+    {
+      "declared_at": "None",
+      "declared_line": -1,
+      "line": 53,
+      "usage_location": "GLOBAL::A::addAndSave",
+      "variable_name": "memory"
+    },
+    {
+      "declared_at": "GLOBAL::A::addAndSave",
+      "declared_line": 51,
+      "line": 53,
+      "usage_location": "GLOBAL::A::addAndSave",
+      "variable_name": "sum"
+    },
+    {
+      "declared_at": "GLOBAL::A::addAndSave",
+      "declared_line": 51,
+      "line": 54,
+      "usage_location": "GLOBAL::A::addAndSave",
+      "variable_name": "sum"
     }
   ],
   "3_method_declarations": [
@@ -99,7 +176,7 @@
       "actual_return_types": [],
       "method_name": "main",
       "line": 1,
-      "full_scope": "Main"
+      "full_scope": "Main::main"
     },
     {
       "declared_return_type": "int",
@@ -107,21 +184,95 @@
         "int",
         "boolean"
       ],
-      "actual_return_types": ["unknown"],
+      "actual_return_types": ["boolean"],
       "method_name": "foo",
       "line": 18,
       "full_scope": "GLOBAL::A::foo"
     },
     {
       "declared_return_type": "int",
-      "parameter_types": ["int"],
-      "actual_return_types": ["unknown"],
-      "method_name": "bar",
+      "parameter_types": [],
+      "actual_return_types": ["int"],
+      "method_name": "getResult",
       "line": 24,
+      "full_scope": "GLOBAL::A::getResult"
+    },
+    {
+      "declared_return_type": "int",
+      "parameter_types": ["int"],
+      "actual_return_types": ["int"],
+      "method_name": "bar",
+      "line": 28,
       "full_scope": "GLOBAL::A::bar"
+    },
+    {
+      "declared_return_type": "void",
+      "parameter_types": [],
+      "actual_return_types": [],
+      "method_name": "saveToMemory",
+      "line": 43,
+      "full_scope": "GLOBAL::A::saveToMemory"
+    },
+    {
+      "declared_return_type": "int",
+      "parameter_types": [
+        "int",
+        "int"
+      ],
+      "actual_return_types": ["int"],
+      "method_name": "addAndSave",
+      "line": 50,
+      "full_scope": "GLOBAL::A::addAndSave"
     }
   ],
-  "2_method_calls": [],
+  "2_method_calls": [
+    {
+      "declared_at": "GLOBAL::A::getResult",
+      "call_location": "GLOBAL::A::bar",
+      "argument_count": 2,
+      "declared_line": 24,
+      "method_name": "getResult",
+      "argument_types": [
+        "String",
+        "int"
+      ],
+      "line": 31
+    },
+    {
+      "declared_at": "GLOBAL::A::getResult",
+      "call_location": "GLOBAL::A::bar",
+      "argument_count": 2,
+      "declared_line": 24,
+      "method_name": "getResult",
+      "argument_types": [
+        "int",
+        "String"
+      ],
+      "line": 32
+    },
+    {
+      "declared_at": "GLOBAL::A::getResult",
+      "call_location": "GLOBAL::A::saveToMemory",
+      "argument_count": 0,
+      "declared_line": 24,
+      "method_name": "getResult",
+      "argument_types": [],
+      "line": 46
+    },
+    {
+      "declared_at": "None",
+      "call_location": "GLOBAL::A::addAndSave",
+      "argument_count": 3,
+      "declared_line": -1,
+      "method_name": "compute",
+      "argument_types": [
+        "int",
+        "int",
+        "int"
+      ],
+      "line": 52
+    }
+  ],
   "1_variable_declarations": [
     {
       "line": 3,
@@ -168,17 +319,55 @@
       "full_scope": "GLOBAL::A::foo"
     },
     {
-      "line": 24,
+      "line": 28,
       "variable_name": "p",
       "type": "int",
       "is_parameter": true,
       "full_scope": "GLOBAL::A::bar"
     },
     {
-      "line": 26,
+      "line": 30,
+      "variable_name": "currentResult",
+      "type": "int",
+      "full_scope": "GLOBAL::A::bar"
+    },
+    {
+      "line": 35,
       "variable_name": "t",
       "type": "int",
       "full_scope": "GLOBAL::A::bar"
+    },
+    {
+      "line": 44,
+      "variable_name": "x",
+      "type": "int",
+      "full_scope": "GLOBAL::A::saveToMemory"
+    },
+    {
+      "line": 45,
+      "variable_name": "x",
+      "type": "int",
+      "full_scope": "GLOBAL::A::saveToMemory"
+    },
+    {
+      "line": 50,
+      "variable_name": "x",
+      "type": "int",
+      "is_parameter": true,
+      "full_scope": "GLOBAL::A::addAndSave"
+    },
+    {
+      "line": 50,
+      "variable_name": "y",
+      "type": "int",
+      "is_parameter": true,
+      "full_scope": "GLOBAL::A::addAndSave"
+    },
+    {
+      "line": 51,
+      "variable_name": "sum",
+      "type": "int",
+      "full_scope": "GLOBAL::A::addAndSave"
     }
   ]
 }

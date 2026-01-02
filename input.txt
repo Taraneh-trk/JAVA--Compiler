@@ -21,13 +21,37 @@ class A extends B {
         return b;
     }
 
+    public int getResult(){
+	return 20;
+    }
+
     public int bar(int p) {
+	// Call method with no parameters
+        int currentResult;
+        currentResult = calc.getResult("test for fun",22);
+	currentResult = calc.getResult(21,"test for fun");
+
         if (p < 10) {
             int t;
             t = p + 1;
         }
         t = p + 2;
         return p;
+    }
+
+    // Method that calls other methods - no parameters
+    public void saveToMemory() {
+	int x;
+        int x;
+        memory = this.getResult();
+    }
+    
+    // Method that calls other methods - with parameters
+    public int addAndSave(int x, int y) {
+        int sum;
+        sum = this.compute(x, y, 0);
+        memory = sum;
+        return sum;
     }
 }
 

@@ -127,7 +127,18 @@
     "symbolType": "variable"
   },
   {
+    "access": "public",
     "line": 24,
+    "scope": "A",
+    "name": "getResult",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [],
+    "symbolType": "method",
+    "returnType": "int"
+  },
+  {
+    "line": 28,
     "dataType": "int",
     "scope": "A::bar",
     "name": "p",
@@ -135,13 +146,13 @@
   },
   {
     "access": "public",
-    "line": 24,
+    "line": 28,
     "scope": "A",
     "name": "bar",
     "isOverride": false,
     "isAbstract": false,
     "parameters": [{
-      "line": 24,
+      "line": 28,
       "dataType": "int",
       "scope": "A::bar",
       "name": "p",
@@ -152,7 +163,16 @@
   },
   {
     "access": "local",
-    "line": 26,
+    "line": 30,
+    "dataType": "int",
+    "scope": "A::bar",
+    "name": "currentResult",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "line": 35,
     "dataType": "int",
     "scope": "A::bar::BLOCK#1",
     "name": "t",
@@ -160,9 +180,87 @@
     "symbolType": "variable"
   },
   {
+    "access": "public",
+    "line": 43,
+    "scope": "A",
+    "name": "saveToMemory",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [],
+    "symbolType": "method",
+    "returnType": "void"
+  },
+  {
+    "access": "local",
+    "line": 44,
+    "dataType": "int",
+    "scope": "A::saveToMemory",
+    "name": "x",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "line": 45,
+    "dataType": "int",
+    "scope": "A::saveToMemory",
+    "name": "x",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "line": 50,
+    "dataType": "int",
+    "scope": "A::addAndSave",
+    "name": "x",
+    "symbolType": "parameter"
+  },
+  {
+    "line": 50,
+    "dataType": "int",
+    "scope": "A::addAndSave",
+    "name": "y",
+    "symbolType": "parameter"
+  },
+  {
+    "access": "public",
+    "line": 50,
+    "scope": "A",
+    "name": "addAndSave",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [
+      {
+        "line": 50,
+        "dataType": "int",
+        "scope": "A::addAndSave",
+        "name": "x",
+        "symbolType": "parameter"
+      },
+      {
+        "line": 50,
+        "dataType": "int",
+        "scope": "A::addAndSave",
+        "name": "y",
+        "symbolType": "parameter"
+      }
+    ],
+    "symbolType": "method",
+    "returnType": "int"
+  },
+  {
+    "access": "local",
+    "line": 51,
+    "dataType": "int",
+    "scope": "A::addAndSave",
+    "name": "sum",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
     "parent": "C",
     "interfaces": [],
-    "line": 34,
+    "line": 58,
     "scope": "GLOBAL",
     "name": "B",
     "isAbstract": false,
@@ -171,7 +269,7 @@
   {
     "parent": "A",
     "interfaces": [],
-    "line": 37,
+    "line": 61,
     "scope": "GLOBAL",
     "name": "C",
     "isAbstract": false,
