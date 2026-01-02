@@ -22,6 +22,114 @@ typedef long long int ll;
 // ============================= JSON Parser ======================================
 class SimpleJSON {
     public:
+        bool parseAntlrData(const string content_recive, vector<unordered_map<string, vector<unordered_map<string, string>>>>& datas, const string& filename="") {
+            string content;
+            if(!filename.empty()){
+                ifstream file(filename);
+                if (!file.is_open()) {
+                    cerr << "[Error] Cannot open file: " << filename << "\n";
+                    return false;
+                }
+
+                string content_((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+                content = content_;
+                file.close();
+            } else {
+                content = content_recive;
+            }
+
+            if (content.empty()) {
+                cerr << "[Warning] JSON file is empty\n";
+                return true;
+            }
+
+            // Initialize the result vector with 4 empty maps
+            datas.clear();
+            datas.resize(4);
+            
+            // Map category names to indices
+            unordered_map<string, int> categoryIndex = {
+                {"1_variable_declarations", 0},
+                {"2_method_calls", 1},
+                {"3_method_declarations", 2},
+                {"4_variable_usages", 3}
+            };
+
+            size_t pos = 0;
+            
+            // Find the root object
+            size_t rootStart = content.find('{');
+            if (rootStart == string::npos) {
+                cerr << "[Error] No JSON object found\n";
+                return false;
+            }
+
+            // Parse the root object
+            size_t rootEnd = findMatchingBrace(content, rootStart);
+            if (rootEnd == string::npos) {
+                cerr << "[Error] Malformed JSON: unmatched braces\n";
+                return false;
+            }
+
+            string rootStr = content.substr(rootStart + 1, rootEnd - rootStart - 1);
+            pos = 0;
+
+            while (pos < rootStr.size()) {
+                // Find key (category name)
+                while (pos < rootStr.size() && isspace(rootStr[pos])) pos++;
+                if (pos >= rootStr.size()) break;
+
+                size_t keyStart = rootStr.find('"', pos);
+                if (keyStart == string::npos) break;
+
+                size_t keyEnd = rootStr.find('"', keyStart + 1);
+                if (keyEnd == string::npos) break;
+
+                string category = rootStr.substr(keyStart + 1, keyEnd - keyStart - 1);
+
+                // Find colon
+                size_t colonPos = rootStr.find(':', keyEnd);
+                if (colonPos == string::npos) break;
+
+                // Find value (array)
+                size_t valueStart = colonPos + 1;
+                while (valueStart < rootStr.size() && isspace(rootStr[valueStart])) valueStart++;
+                if (valueStart >= rootStr.size() || rootStr[valueStart] != '[') {
+                    cerr << "[Error] Expected array for category: " << category << "\n";
+                    break;
+                }
+
+                size_t arrayEnd = findMatchingBracket(rootStr, valueStart);
+                if (arrayEnd == string::npos) break;
+
+                string arrayStr = rootStr.substr(valueStart + 1, arrayEnd - valueStart - 1);
+                
+                // Parse the array of objects
+                vector<unordered_map<string, string>> arrayData;
+                if (!parseArrayWithSpecialHandling(arrayStr, arrayData)) {
+                    cerr << "[Warning] Failed to parse array for category: " << category << "\n";
+                }
+
+                // Store in the appropriate category
+                if (categoryIndex.count(category)) {
+                    int idx = categoryIndex[category];
+                    datas[idx][category] = arrayData;
+                    cout << "[Info] Parsed " << arrayData.size() << " items for category: " << category << "\n";
+                } else {
+                    cerr << "[Warning] Unknown category: " << category << "\n";
+                }
+
+                pos = arrayEnd + 1;
+                
+                // Find next comma or end
+                size_t commaPos = rootStr.find(',', pos);
+                if (commaPos == string::npos) break;
+                pos = commaPos + 1;
+            }
+
+            return true;
+        }
+
         static bool parseSymbols(const string content_recive, vector<unordered_map<string, string>>& symbols, const string& filename="") {
             string content;
             if(!filename.empty()){
@@ -89,15 +197,164 @@ class SimpleJSON {
         }
 
     private:
-        static size_t findMatchingBrace(const string& str, size_t start) {
-            int count = 1;
-            for (size_t i = start + 1; i < str.size(); i++) {
-                if (str[i] == '{') count++;
-                else if (str[i] == '}') count--;
+        static bool parseArrayWithSpecialHandling(const string& arrayStr, vector<unordered_map<string, string>>& arrayData) {
+            size_t pos = 0;
+            
+            while (pos < arrayStr.size()) {
+                while (pos < arrayStr.size() && isspace(arrayStr[pos])) pos++;
+                if (pos >= arrayStr.size()) break;
 
-                if (count == 0) return i;
+                if (arrayStr[pos] == '{') {
+                    size_t objEnd = findMatchingBrace(arrayStr, pos);
+                    if (objEnd == string::npos) break;
+
+                    string objStr = arrayStr.substr(pos + 1, objEnd - pos - 1);
+                    unordered_map<string, string> obj;
+                    
+                    if (!parseObjectEnhanced(objStr, obj)) {
+                        pos = objEnd + 1;
+                        continue;
+                    }
+
+                    if (!obj.empty()) {
+                        arrayData.push_back(obj);
+                    }
+
+                    pos = objEnd + 1;
+                } else {
+                    // Skip non-object elements
+                    size_t nextComma = arrayStr.find(',', pos);
+                    if (nextComma == string::npos) break;
+                    pos = nextComma + 1;
+                }
+                
+                // Find next comma
+                size_t commaPos = arrayStr.find(',', pos);
+                if (commaPos == string::npos) break;
+                pos = commaPos + 1;
             }
-            return string::npos;
+            
+            return true;
+        }
+
+        static bool parseObjectEnhanced(const string& objStr, unordered_map<string, string>& obj) {
+            size_t pos = 0;
+            while (pos < objStr.size()) {
+                // Find key
+                size_t keyStart = objStr.find('"', pos);
+                if (keyStart == string::npos) break;
+
+                size_t keyEnd = objStr.find('"', keyStart + 1);
+                if (keyEnd == string::npos) break;
+
+                string key = objStr.substr(keyStart + 1, keyEnd - keyStart - 1);
+
+                // Find colon
+                size_t colonPos = objStr.find(':', keyEnd);
+                if (colonPos == string::npos) break;
+
+                // Find value
+                size_t valueStart = colonPos + 1;
+                while (valueStart < objStr.size() && isspace(objStr[valueStart])) valueStart++;
+                if (valueStart >= objStr.size()) break;
+
+                string value;
+                if (objStr[valueStart] == '"') {
+                    // String value
+                    size_t valueEnd = objStr.find('"', valueStart + 1);
+                    if (valueEnd == string::npos) break;
+                    value = objStr.substr(valueStart + 1, valueEnd - valueStart - 1);
+                    pos = valueEnd + 1;
+                } else if (objStr[valueStart] == '[') {
+                    // Array value - parse array elements with special handling
+                    size_t arrayEnd = findMatchingBracket(objStr, valueStart);
+                    if (arrayEnd == string::npos) break;
+                    
+                    // Extract array content
+                    string arrayContent = objStr.substr(valueStart + 1, arrayEnd - valueStart - 1);
+                    
+                    // Parse array elements
+                    vector<string> arrayElements;
+                    size_t elemPos = 0;
+                    while (elemPos < arrayContent.size()) {
+                        while (elemPos < arrayContent.size() && isspace(arrayContent[elemPos])) elemPos++;
+                        if (elemPos >= arrayContent.size()) break;
+                        
+                        if (arrayContent[elemPos] == '"') {
+                            // String element
+                            size_t elemEnd = arrayContent.find('"', elemPos + 1);
+                            if (elemEnd == string::npos) break;
+                            string element = arrayContent.substr(elemPos + 1, elemEnd - elemPos - 1);
+                            arrayElements.push_back(element);
+                            elemPos = elemEnd + 1;
+                        } else if (arrayContent[elemPos] == '[') {
+                            // Nested array - store as JSON string
+                            size_t nestedArrayEnd = findMatchingBracket(arrayContent, elemPos);
+                            if (nestedArrayEnd == string::npos) break;
+                            string element = arrayContent.substr(elemPos, nestedArrayEnd - elemPos + 1);
+                            arrayElements.push_back(element);
+                            elemPos = nestedArrayEnd + 1;
+                        } else {
+                            // Non-string element (number, boolean, null)
+                            size_t elemEnd = arrayContent.find_first_of(",]", elemPos);
+                            if (elemEnd == string::npos) elemEnd = arrayContent.size();
+                            string element = arrayContent.substr(elemPos, elemEnd - elemPos);
+                            // Trim whitespace
+                            element.erase(0, element.find_first_not_of(" \t\n\r"));
+                            element.erase(element.find_last_not_of(" \t\n\r") + 1);
+                            if (!element.empty()) {
+                                arrayElements.push_back(element);
+                            }
+                            elemPos = elemEnd;
+                        }
+                        
+                        // Skip comma
+                        size_t commaPos = arrayContent.find(',', elemPos);
+                        if (commaPos == string::npos) break;
+                        elemPos = commaPos + 1;
+                    }
+                    
+                    // Store array as a pipe-separated string
+                    ostringstream oss;
+                    for (size_t i = 0; i < arrayElements.size(); i++) {
+                        if (i > 0) oss << "|";
+                        oss << arrayElements[i];
+                    }
+                    value = oss.str();
+                    pos = arrayEnd + 1;
+                } else if (objStr[valueStart] == '{') {
+                    // Object value - store as JSON string
+                    size_t objectEnd = findMatchingBrace(objStr, valueStart);
+                    if (objectEnd == string::npos) break;
+                    value = objStr.substr(valueStart, objectEnd - valueStart + 1);
+                    pos = objectEnd + 1;
+                } else {
+                    // Simple value (boolean, number, null)
+                    size_t valueEnd = objStr.find_first_of(",}", valueStart);
+                    if (valueEnd == string::npos) valueEnd = objStr.size();
+                    value = objStr.substr(valueStart, valueEnd - valueStart);
+
+                    // Trim whitespace
+                    size_t start = value.find_first_not_of(" \t\n\r");
+                    size_t end = value.find_last_not_of(" \t\n\r");
+                    if (start != string::npos && end != string::npos) {
+                        value = value.substr(start, end - start + 1);
+                    } else {
+                        value = "";
+                    }
+                    pos = valueEnd;
+                }
+
+                if (!key.empty() && !value.empty()) {
+                    obj[key] = value;
+                }
+
+                // Find next comma
+                size_t commaPos = objStr.find(',', pos);
+                if (commaPos == string::npos) break;
+                pos = commaPos + 1;
+            }
+            return true;
         }
 
         static bool parseObject(const string& objStr, unordered_map<string, string>& obj) {
@@ -168,6 +425,17 @@ class SimpleJSON {
                 pos = commaPos + 1;
             }
             return true;
+        }
+
+        static size_t findMatchingBrace(const string& str, size_t start) {
+            int count = 1;
+            for (size_t i = start + 1; i < str.size(); i++) {
+                if (str[i] == '{') count++;
+                else if (str[i] == '}') count--;
+
+                if (count == 0) return i;
+            }
+            return string::npos;
         }
 
         static size_t findMatchingBracket(const string& str, size_t start) {
@@ -539,7 +807,7 @@ public:
     void dump(int indent = 0) const {
         string pad(indent, ' ');
         cout << pad << "Scope: " << name << " (full: " << fullPath << ")\n";
-
+        
         for (const auto& [id, sym] : symbols) {
             cout << pad << "  - ";
             sym.print();
@@ -990,21 +1258,22 @@ public:
         return currentScope;
     }
 
-    void lookup(const string& identName,const string& scope) const {
+    Symbol lookup(const string& identName,const string& scope) const {
         auto it = move_to_scope(scope);
 
         if (!it) {
             cout << "\n[Error] Scope '" << scope << "' not found\n";
-            return;
+            return Symbol();
         }
 
         bool flag=false;
         auto table_scope = it->getSymbols();
         for(auto& [scope_name,scope_member] : table_scope){
             if(scope_name==identName){
-                cout<<'\n';
-                scope_member.print();
-                cout<<'\n';
+                // cout<<'\n';
+                // scope_member.print();
+                // cout<<'\n';
+                return scope_member;
                 flag=true;
                 break;
             }
@@ -1012,7 +1281,91 @@ public:
         if (!flag) {
             cout << "\n[Not Found] Symbol '" << identName << "' not found in symbol table\n";
         }
+
+        return Symbol();
     }
+};
+
+// 
+
+class AntlrParseData{
+    public:
+        vector<unordered_map<string, string>> variableDeclarations;  // variable_declarations (variable_name, declared_scope, declared_line)
+        vector<unordered_map<string, string>> methodCalls;  // method_usage (method_name, declared_scope, call_line, arg_count, arg_types_inOrder)
+        vector<unordered_map<string, string>> methodDeclarations;  // method_declaration (method_name, declared_scope, declared_line, actual_return_type)
+        vector<unordered_map<string, string>> variableUsages;  // variable_usages (variable_name, usage_scope, declared_scope, usage_line)
+
+        bool loadFromJSON(string filename){
+            vector<unordered_map<string, vector<unordered_map<string, string>>>> parsedData;
+            SimpleJSON parser;
+            
+            if (!parser.parseAntlrData("", parsedData, filename)) {
+                cerr << "[Error] Failed to parse JSON file: " << filename << "\n";
+                return false;
+            }
+            
+            if (parsedData.size() > 0 && parsedData[0].count("1_variable_declarations")) {
+                variableDeclarations = parsedData[0]["1_variable_declarations"];
+                cout << "[Info] Loaded " << variableDeclarations.size() << " variable declarations\n";
+            }
+            
+            if (parsedData.size() > 1 && parsedData[1].count("2_method_calls")) {
+                methodCalls = parsedData[1]["2_method_calls"];
+                cout << "[Info] Loaded " << methodCalls.size() << " method calls\n";
+            }
+            
+            if (parsedData.size() > 2 && parsedData[2].count("3_method_declarations")) {
+                methodDeclarations = parsedData[2]["3_method_declarations"];
+                cout << "[Info] Loaded " << methodDeclarations.size() << " method declarations\n";
+            }
+            
+            if (parsedData.size() > 3 && parsedData[3].count("4_variable_usages")) {
+                variableUsages = parsedData[3]["4_variable_usages"];
+                cout << "[Info] Loaded " << variableUsages.size() << " variable usages\n";
+            }
+            
+            return true;
+        }
+        
+        void printVariableDeclarations() const {
+            cout << "\n==================== Variable Declarations ====================\n";
+            for (const auto& decl : variableDeclarations) {
+                cout << "Variable: " << decl.at("variable_name") 
+                    << " Type: " << decl.at("type")
+                    << " Scope: " << decl.at("full_scope")
+                    << " Line: " << decl.at("line") << "\n";
+            }
+        }
+        
+        void printMethodCalls() const {
+            cout << "\n==================== Method Calls ====================\n";
+            for (const auto& call : methodCalls) {
+                cout << "Method: " << call.at("method_name")
+                    << " Called at: " << call.at("call_location")
+                    << " Line: " << call.at("line")
+                    << " Args: " << call.at("argument_count") << "\n";
+            }
+        }
+        
+        void printMethodDeclarations() const {
+            cout << "\n==================== Method Declarations ====================\n";
+            for (const auto& decl : methodDeclarations) {
+                cout << "Method: " << decl.at("method_name")
+                    << " Scope: " << decl.at("full_scope")
+                    << " Return: " << decl.at("declared_return_type")
+                    << " Line: " << decl.at("line") << "\n";
+            }
+        }
+        
+        void printVariableUsages() const {
+            cout << "\n==================== Variable Usages ====================\n";
+            for (const auto& usage : variableUsages) {
+                cout << "Variable: " << usage.at("variable_name")
+                    << " Used at: " << usage.at("usage_location")
+                    << " Line: " << usage.at("line")
+                    << " Declared at: " << usage.at("declared_at") << "\n";
+            }
+        }
 };
 
 // ============================= Error Detection ============================
@@ -1067,15 +1420,13 @@ class ErrorDetection {
         string buffer;
         size_t pos;
         SymbolTable* symbol_table;
-        unordered_map<pair<string,string>,int,PairHash> VarName_DeclaredScope_Count; // { (variable_name,full_scope) : number of the variable in that scope }
-        unordered_map<pair<string,string>,pair<pair<vector<string>,int>,string>,PairHash> Method; // { (method_name,full_scope) : ( ( parameters_type<> , parameters_count ) , return_type ) }
-        unordered_map<string,string> VarName_UsedScope; // { variable_name : full_scope }
-        unordered_map<string,string> VarName_DeclaredScope; // { variable_name : full_scope }
+        AntlrParseData SementicData;
 
     public:
-        ErrorDetection(const string buffer ,SymbolTable* symbol_table){
+        ErrorDetection(const string buffer ,SymbolTable* symbol_table, AntlrParseData sementicData = AntlrParseData()){
             this->buffer = buffer;
             this->symbol_table = symbol_table;
+            this->SementicData = sementicData;
             this->pos = 0;
         }
 
@@ -1083,25 +1434,126 @@ class ErrorDetection {
             vector<Error> ans;
             size_t error_num=0;
 
+            // solution 1 : 
             /*
                 This section was added to the symbol table module because the project specification
                  states that duplicate variables must not be printed in the symbol table.
                 In this part, the results of the checks performed within that module are used.
             */
-            for(auto err : InProcessError){
-                ans.push_back(Error(err.first,ErrorType::DuplicateVariableInScope));
-                error_num++;
+            // for(auto err : InProcessError){
+            //     ans.push_back(Error(err.first,ErrorType::DuplicateVariableInScope));
+            //     error_num++;
+            // }
+
+            // solution 2 :
+
+            unordered_map<pair<string,string>, size_t, PairHash> varCount; // (varName, scope) -> counting the number of declarations
+            unordered_map<pair<string,string>, size_t, PairHash> varLine;  // (varName, scope) -> first declaration line
+
+            for (const auto& decl : SementicData.variableDeclarations) {
+                string varName = decl.at("variable_name");
+                string scope = decl.at("full_scope");
+                size_t line = stoi(decl.at("line"));
+
+                pair<string,string> key = make_pair(varName, scope);
+
+                if (varCount.find(key) == varCount.end()) {
+                    varCount[key] = 0;
+                    varLine[key] = line;
+                }
+
+                varCount[key]++;
+
+                if (varCount[key]>1) { 
+                    ans.push_back(Error(line, ErrorType::DuplicateVariableInScope));
+                    error_num++;
+                }
             }
 
-
-
             return ans;
+        }
+
+        static vector<string> parsePipeSeparated(const string& str) {
+            vector<string> result;
+            if (str.empty()) return result;
+            
+            stringstream ss(str);
+            string token;
+            while (getline(ss, token, '|')) {
+                if (!token.empty()) {
+                    result.push_back(token);
+                }
+            }
+            return result;
         }
 
         vector<Error> Detect_Method_Call_Signature_Mismatch(){
             vector<Error> ans;
             size_t error_num=0;
 
+            for (const auto& call : SementicData.methodCalls) {
+                string methodName = call.at("method_name");
+                string declaredScope = call.at("declared_at");
+                size_t callLine = stoi(call.at("line"));
+                size_t argCount = stoi(call.at("argument_count"));
+                vector<string> argTypes;
+                if(argCount!=0){
+                    argTypes = parsePipeSeparated(call.at("argument_types"));
+                }
+
+                bool foundDeclaration = false;
+
+                // Method declaration not found
+                if(declaredScope=="None"){
+                    ans.push_back(Error(callLine, ErrorType::MethodCallSignatureMismatch));
+                    error_num++;
+                    continue;
+                }
+                string classScope = declaredScope;
+                size_t lastColon = classScope.rfind("::");
+                if (lastColon != string::npos) {
+                    classScope = classScope.substr(0, lastColon);  // Remove "::methodName"
+                }
+                if (classScope.find("GLOBAL::") == 0) {
+                    classScope = classScope.substr(8); // Remove "GLOBAL::"
+                }
+                // if(classScope=="GLOBAL"){
+                //     classScope="";
+                // }
+                declaredScope = classScope;
+                
+
+                Symbol methodInSymbolTable = this->symbol_table->lookup(methodName,declaredScope);
+
+                if (methodInSymbolTable.getName() != "") {
+                    if (methodInSymbolTable.kind == IdentifierKind::Method) {
+                        auto methodData = dynamic_pointer_cast<MethodInfo>(methodInSymbolTable.data);
+                        if (methodData) {
+                            size_t declaredParamCount = methodData->parameters.size();
+
+                            if (declaredParamCount != static_cast<size_t>(argCount)) {
+                                ans.push_back(Error(callLine, ErrorType::MethodCallSignatureMismatch));
+                                error_num++;
+                            } else {
+                                if(argCount==0){
+                                    foundDeclaration = true;
+                                    continue;
+                                }
+                                vector<ParameterInfo> declaredParams = methodData->parameters;
+                                for (size_t i = 0; i < declaredParamCount; i++) {
+                                    if (declaredParams[i].type.name != argTypes[i]) {
+                                        ans.push_back(Error(callLine, ErrorType::MethodCallSignatureMismatch));
+                                        error_num++;
+                                        break;
+                                    }
+                                }
+                            }
+                            foundDeclaration = true;
+                        }
+                    }
+                }
+                
+            }
 
             return ans;
         }
@@ -1225,7 +1677,6 @@ int main() {
     cout << "Loading symbol table from symbols.json...\n";
     if (!symbolTable.loadFromJSON("symbols.json")) {
         cerr << "[Error] Failed to load symbols.json\n";
-        cerr << "Creating empty symbol table for demonstration...\n";
     }
 
     symbolTable.printSymbolsTable();
@@ -1241,7 +1692,12 @@ int main() {
 
     symbolTable.dump();
 
-    ErrorDetection ErrorDetector(testCode, &symbolTable);
+    AntlrParseData antlrDatas;
+    if(!antlrDatas.loadFromJSON("semantic_info.json")){
+        cerr << "[Error] Failed to load semantic_info.json\n";
+    }
+
+    ErrorDetection ErrorDetector(testCode, &symbolTable, antlrDatas);
     ErrorDetector.PrintDetectedErrors();
 
     cout << "\nThank you for using Java-- Compiler!\n";
