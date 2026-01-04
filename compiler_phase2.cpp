@@ -46,7 +46,7 @@ class SimpleJSON {
             // Initialize the result vector with 4 empty maps
             datas.clear();
             datas.resize(4);
-            
+
             // Map category names to indices
             unordered_map<string, int> categoryIndex = {
                 {"1_variable_declarations", 0},
@@ -56,7 +56,7 @@ class SimpleJSON {
             };
 
             size_t pos = 0;
-            
+
             // Find the root object
             size_t rootStart = content.find('{');
             if (rootStart == string::npos) {
@@ -103,7 +103,7 @@ class SimpleJSON {
                 if (arrayEnd == string::npos) break;
 
                 string arrayStr = rootStr.substr(valueStart + 1, arrayEnd - valueStart - 1);
-                
+
                 // Parse the array of objects
                 vector<unordered_map<string, string>> arrayData;
                 if (!parseArrayWithSpecialHandling(arrayStr, arrayData)) {
@@ -120,7 +120,7 @@ class SimpleJSON {
                 }
 
                 pos = arrayEnd + 1;
-                
+
                 // Find next comma or end
                 size_t commaPos = rootStr.find(',', pos);
                 if (commaPos == string::npos) break;
@@ -199,7 +199,7 @@ class SimpleJSON {
     private:
         static bool parseArrayWithSpecialHandling(const string& arrayStr, vector<unordered_map<string, string>>& arrayData) {
             size_t pos = 0;
-            
+
             while (pos < arrayStr.size()) {
                 while (pos < arrayStr.size() && isspace(arrayStr[pos])) pos++;
                 if (pos >= arrayStr.size()) break;
@@ -210,7 +210,7 @@ class SimpleJSON {
 
                     string objStr = arrayStr.substr(pos + 1, objEnd - pos - 1);
                     unordered_map<string, string> obj;
-                    
+
                     if (!parseObjectEnhanced(objStr, obj)) {
                         pos = objEnd + 1;
                         continue;
@@ -227,13 +227,13 @@ class SimpleJSON {
                     if (nextComma == string::npos) break;
                     pos = nextComma + 1;
                 }
-                
+
                 // Find next comma
                 size_t commaPos = arrayStr.find(',', pos);
                 if (commaPos == string::npos) break;
                 pos = commaPos + 1;
             }
-            
+
             return true;
         }
 
@@ -269,17 +269,17 @@ class SimpleJSON {
                     // Array value - parse array elements with special handling
                     size_t arrayEnd = findMatchingBracket(objStr, valueStart);
                     if (arrayEnd == string::npos) break;
-                    
+
                     // Extract array content
                     string arrayContent = objStr.substr(valueStart + 1, arrayEnd - valueStart - 1);
-                    
+
                     // Parse array elements
                     vector<string> arrayElements;
                     size_t elemPos = 0;
                     while (elemPos < arrayContent.size()) {
                         while (elemPos < arrayContent.size() && isspace(arrayContent[elemPos])) elemPos++;
                         if (elemPos >= arrayContent.size()) break;
-                        
+
                         if (arrayContent[elemPos] == '"') {
                             // String element
                             size_t elemEnd = arrayContent.find('"', elemPos + 1);
@@ -307,13 +307,13 @@ class SimpleJSON {
                             }
                             elemPos = elemEnd;
                         }
-                        
+
                         // Skip comma
                         size_t commaPos = arrayContent.find(',', elemPos);
                         if (commaPos == string::npos) break;
                         elemPos = commaPos + 1;
                     }
-                    
+
                     // Store array as a pipe-separated string
                     ostringstream oss;
                     for (size_t i = 0; i < arrayElements.size(); i++) {
@@ -807,7 +807,7 @@ public:
     void dump(int indent = 0) const {
         string pad(indent, ' ');
         cout << pad << "Scope: " << name << " (full: " << fullPath << ")\n";
-        
+
         for (const auto& [id, sym] : symbols) {
             cout << pad << "  - ";
             sym.print();
@@ -1286,7 +1286,7 @@ public:
     }
 };
 
-// 
+//
 
 class AntlrParseData{
     public:
@@ -1298,45 +1298,45 @@ class AntlrParseData{
         bool loadFromJSON(string filename){
             vector<unordered_map<string, vector<unordered_map<string, string>>>> parsedData;
             SimpleJSON parser;
-            
+
             if (!parser.parseAntlrData("", parsedData, filename)) {
                 cerr << "[Error] Failed to parse JSON file: " << filename << "\n";
                 return false;
             }
-            
+
             if (parsedData.size() > 0 && parsedData[0].count("1_variable_declarations")) {
                 variableDeclarations = parsedData[0]["1_variable_declarations"];
                 cout << "[Info] Loaded " << variableDeclarations.size() << " variable declarations\n";
             }
-            
+
             if (parsedData.size() > 1 && parsedData[1].count("2_method_calls")) {
                 methodCalls = parsedData[1]["2_method_calls"];
                 cout << "[Info] Loaded " << methodCalls.size() << " method calls\n";
             }
-            
+
             if (parsedData.size() > 2 && parsedData[2].count("3_method_declarations")) {
                 methodDeclarations = parsedData[2]["3_method_declarations"];
                 cout << "[Info] Loaded " << methodDeclarations.size() << " method declarations\n";
             }
-            
+
             if (parsedData.size() > 3 && parsedData[3].count("4_variable_usages")) {
                 variableUsages = parsedData[3]["4_variable_usages"];
                 cout << "[Info] Loaded " << variableUsages.size() << " variable usages\n";
             }
-            
+
             return true;
         }
-        
+
         void printVariableDeclarations() const {
             cout << "\n==================== Variable Declarations ====================\n";
             for (const auto& decl : variableDeclarations) {
-                cout << "Variable: " << decl.at("variable_name") 
+                cout << "Variable: " << decl.at("variable_name")
                     << " Type: " << decl.at("type")
                     << " Scope: " << decl.at("full_scope")
                     << " Line: " << decl.at("line") << "\n";
             }
         }
-        
+
         void printMethodCalls() const {
             cout << "\n==================== Method Calls ====================\n";
             for (const auto& call : methodCalls) {
@@ -1346,7 +1346,7 @@ class AntlrParseData{
                     << " Args: " << call.at("argument_count") << "\n";
             }
         }
-        
+
         void printMethodDeclarations() const {
             cout << "\n==================== Method Declarations ====================\n";
             for (const auto& decl : methodDeclarations) {
@@ -1356,7 +1356,7 @@ class AntlrParseData{
                     << " Line: " << decl.at("line") << "\n";
             }
         }
-        
+
         void printVariableUsages() const {
             cout << "\n==================== Variable Usages ====================\n";
             for (const auto& usage : variableUsages) {
@@ -1434,7 +1434,7 @@ class ErrorDetection {
             vector<Error> ans;
             size_t error_num=0;
 
-            // solution 1 : 
+            // solution 1 :
             /*
                 This section was added to the symbol table module because the project specification
                  states that duplicate variables must not be printed in the symbol table.
@@ -1464,7 +1464,7 @@ class ErrorDetection {
 
                 varCount[key]++;
 
-                if (varCount[key]>1) { 
+                if (varCount[key]>1) {
                     ans.push_back(Error(line, ErrorType::DuplicateVariableInScope));
                     error_num++;
                 }
@@ -1476,7 +1476,7 @@ class ErrorDetection {
         static vector<string> parsePipeSeparated(const string& str) {
             vector<string> result;
             if (str.empty()) return result;
-            
+
             stringstream ss(str);
             string token;
             while (getline(ss, token, '|')) {
@@ -1521,7 +1521,7 @@ class ErrorDetection {
                 //     classScope="";
                 // }
                 declaredScope = classScope;
-                
+
 
                 Symbol methodInSymbolTable = this->symbol_table->lookup(methodName,declaredScope);
 
@@ -1552,7 +1552,7 @@ class ErrorDetection {
                         }
                     }
                 }
-                
+
             }
 
             return ans;
@@ -1570,43 +1570,69 @@ class ErrorDetection {
             vector<Error> ans;
             size_t error_num=0;
 
-            // unordered_map<string, string> parentOf;
-            // unordered_map<string, size_t> classLine;
+            unordered_set<string> reported;
 
-            // for (const auto& sym : symTable.symbolsData) {
-            //     if (sym.at("symbolType") == "class") {
+            Scope* globalScope = symbol_table->getGlobalScope();
 
-            //         string className = sym.at("name");
-            //         string parent = "null";
+            vector<Scope*> stack;
+            stack.push_back(globalScope);
 
-            //         if (sym.count("parent") && sym.at("parent") != "null")
-            //             parent = sym.at("parent");
+            while (!stack.empty()) {
+                Scope* currentScope = stack.back();
+                stack.pop_back();
 
-            //         parentOf[className] = parent;
-            //         classLine[className] = stoi(sym.at("line"));
-            //     }
-            // }
+                for (const auto& [name, sym] : currentScope->getSymbols()) {
 
-            // unordered_set<string> reported;
+                    if (sym.kind != IdentifierKind::Class)
+                        continue;
 
-            // for (const auto& [cls, _] : parentOf) {
-            //     unordered_set<string> visited;
-            //     string current = cls;
+                    ClassInfo* classInfo = dynamic_cast<ClassInfo*>(sym.data.get());
+                    if (!classInfo)
+                        continue;
 
-            //     while (parentOf.count(current) && parentOf[current] != "null") {
-            //         if (visited.count(current)) {
-            //             if (!reported.count(current)) {
-            //                 ans.push_back(Error(classLine[current], ErrorType::CyclicInheritance));
-            //                 error_num++;
-            //                 reported.insert(current);
-            //             }
-            //             break;
-            //         }
+                    unordered_set<string> visited;
+                    string currentClass = classInfo->name;
 
-            //         visited.insert(current);
-            //         current = parentOf[current];
-            //     }
-            // }
+                    while (true) {
+                        if (visited.count(currentClass)) {
+                            if (!reported.count(currentClass)) {
+                                ans.push_back(
+                                    Error(classInfo->line,
+                                          ErrorType::CyclicInheritance)
+                                );
+                                error_num++;
+                                reported.insert(currentClass);
+                            }
+                            break;
+                        }
+
+                        visited.insert(currentClass);
+
+                        Symbol* parentSym =
+                            symbol_table->getGlobalScope()
+                                ->lookup(classInfo->parentClass);
+
+                        if (!parentSym ||
+                            parentSym->kind != IdentifierKind::Class)
+                            break;
+
+                        ClassInfo* parentInfo = dynamic_cast<ClassInfo*>(parentSym->data.get());
+                        if (!parentInfo)
+                            break;
+
+                        if (parentInfo->parentClass.empty() ||
+                            parentInfo->parentClass == "null")
+                            break;
+
+                        currentClass = parentInfo->name;
+                        classInfo = parentInfo;
+                    }
+                }
+
+                for (Scope* child : currentScope->getAllChildren()) {
+                    stack.push_back(child);
+                }
+            }
 
             return ans;
         }
