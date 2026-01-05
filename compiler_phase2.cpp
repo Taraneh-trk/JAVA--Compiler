@@ -1640,7 +1640,55 @@ class ErrorDetection {
         vector<Error> Detect_Invalid_Variable_Access(){
             vector<Error> ans;
             size_t error_num=0;
+            
+            for (const auto& usage : SementicData.variableUsages) {
+                string varName = usage.at("variable_name");
+                string usageLocation = usage.at("usage_location");  
+                size_t usageLine = stoi(usage.at("line"));
+                string declaredAt = usage.at("declared_at");        
 
+                if (declaredAt == "None" || declaredAt.empty()) {
+                    ans.emplace_back(usageLine, ErrorType::InvalidVariableAccess);
+                    error_num++;
+                    continue;
+                }
+
+                if (usageLocation.find(declaredAt) == 0) {
+                    
+
+                    if (usageLocation == declaredAt) {
+                        continue;
+                    }
+                    
+                    string expectedPrefix = declaredAt + "::";
+                    if (usageLocation.find(expectedPrefix) == 0) {
+                        continue;
+                    }
+                }
+
+                bool found = false;
+                
+                Scope* usageScope = symbol_table->move_to_scope(usageLocation);
+    
+                if (usageScope) {
+                    Symbol* sym = usageScope->lookup(varName); 
+                    if (sym && !sym->getName().empty()) {
+                        found = true;
+                    }
+                }
+                
+                if (!found) {
+                    Symbol sym = symbol_table->lookup(varName, declaredAt);
+                    if (!sym.getName().empty()) {
+                        found = false;
+                    }
+                }
+                
+                if (!found) {
+                    ans.emplace_back(usageLine, ErrorType::InvalidVariableAccess);
+                    error_num++;
+                }
+            }
 
             return ans;
         }
