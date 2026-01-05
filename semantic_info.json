@@ -2,171 +2,171 @@
   "4_variable_usages": [
     {
       "declared_at": "GLOBAL::Main::main",
-      "declared_line": 3,
+      "declared_line": 6,
       "line": 7,
       "usage_location": "GLOBAL::Main::main",
-      "variable_name": "a"
-    },
-    {
-      "declared_at": "GLOBAL::Main::main",
-      "declared_line": 5,
-      "line": 10,
-      "usage_location": "GLOBAL::Main::main",
-      "variable_name": "x"
+      "variable_name": "result"
     },
     {
       "declared_at": "None",
       "declared_line": -1,
-      "line": 10,
+      "line": 7,
       "usage_location": "GLOBAL::Main::main",
       "variable_name": "y"
     },
     {
-      "declared_at": "GLOBAL::A::foo",
-      "declared_line": 19,
-      "line": 20,
-      "usage_location": "GLOBAL::A::foo",
-      "variable_name": "z"
+      "declared_at": "GLOBAL::A::method1",
+      "declared_line": 16,
+      "line": 17,
+      "usage_location": "GLOBAL::A::method1",
+      "variable_name": "local1"
     },
     {
-      "declared_at": "GLOBAL::A::foo",
-      "declared_line": 18,
-      "line": 20,
-      "usage_location": "GLOBAL::A::foo",
+      "declared_at": "GLOBAL::A::method1",
+      "declared_line": 15,
+      "line": 17,
+      "usage_location": "GLOBAL::A::method1",
       "variable_name": "a"
     },
     {
-      "declared_at": "GLOBAL::A",
-      "declared_line": 16,
-      "line": 20,
-      "usage_location": "GLOBAL::A::foo",
-      "variable_name": "f"
-    },
-    {
-      "declared_at": "GLOBAL::A::foo",
-      "declared_line": 18,
-      "line": 21,
-      "usage_location": "GLOBAL::A::foo",
+      "declared_at": "GLOBAL::A::method1",
+      "declared_line": 15,
+      "line": 17,
+      "usage_location": "GLOBAL::A::method1",
       "variable_name": "b"
     },
     {
-      "declared_at": "GLOBAL::A::bar",
+      "declared_at": "GLOBAL::A::method1",
+      "declared_line": 16,
+      "line": 18,
+      "usage_location": "GLOBAL::A::method1",
+      "variable_name": "local1"
+    },
+    {
+      "declared_at": "GLOBAL::A::method3",
+      "declared_line": 28,
+      "line": 29,
+      "usage_location": "GLOBAL::A::method3",
+      "variable_name": "obj"
+    },
+    {
+      "declared_at": "GLOBAL::A::method3",
       "declared_line": 30,
       "line": 31,
-      "usage_location": "GLOBAL::A::bar",
-      "variable_name": "currentResult"
-    },
-    {
-      "declared_at": "None",
-      "declared_line": -1,
-      "line": 31,
-      "usage_location": "GLOBAL::A::bar",
-      "variable_name": "calc"
-    },
-    {
-      "declared_at": "GLOBAL::A::bar",
-      "declared_line": 30,
-      "line": 32,
-      "usage_location": "GLOBAL::A::bar",
-      "variable_name": "currentResult"
-    },
-    {
-      "declared_at": "None",
-      "declared_line": -1,
-      "line": 32,
-      "usage_location": "GLOBAL::A::bar",
-      "variable_name": "calc"
-    },
-    {
-      "declared_at": "GLOBAL::A::bar",
-      "declared_line": 28,
-      "line": 34,
-      "usage_location": "GLOBAL::A::bar",
-      "variable_name": "p"
-    },
-    {
-      "declared_at": "GLOBAL::A::bar",
-      "declared_line": 35,
-      "line": 36,
-      "usage_location": "GLOBAL::A::bar",
-      "variable_name": "t"
-    },
-    {
-      "declared_at": "GLOBAL::A::bar",
-      "declared_line": 28,
-      "line": 36,
-      "usage_location": "GLOBAL::A::bar",
-      "variable_name": "p"
-    },
-    {
-      "declared_at": "GLOBAL::A::bar",
-      "declared_line": 35,
-      "line": 38,
-      "usage_location": "GLOBAL::A::bar",
-      "variable_name": "t"
-    },
-    {
-      "declared_at": "GLOBAL::A::bar",
-      "declared_line": 28,
-      "line": 38,
-      "usage_location": "GLOBAL::A::bar",
-      "variable_name": "p"
-    },
-    {
-      "declared_at": "GLOBAL::A::bar",
-      "declared_line": 28,
-      "line": 39,
-      "usage_location": "GLOBAL::A::bar",
-      "variable_name": "p"
-    },
-    {
-      "declared_at": "None",
-      "declared_line": -1,
-      "line": 46,
-      "usage_location": "GLOBAL::A::saveToMemory",
-      "variable_name": "memory"
-    },
-    {
-      "declared_at": "GLOBAL::A::addAndSave",
-      "declared_line": 51,
-      "line": 52,
-      "usage_location": "GLOBAL::A::addAndSave",
-      "variable_name": "sum"
-    },
-    {
-      "declared_at": "GLOBAL::A::addAndSave",
-      "declared_line": 50,
-      "line": 52,
-      "usage_location": "GLOBAL::A::addAndSave",
+      "usage_location": "GLOBAL::A::method3",
       "variable_name": "x"
     },
     {
-      "declared_at": "GLOBAL::A::addAndSave",
-      "declared_line": 50,
-      "line": 52,
-      "usage_location": "GLOBAL::A::addAndSave",
+      "declared_at": "GLOBAL::A::method3",
+      "declared_line": 28,
+      "line": 31,
+      "usage_location": "GLOBAL::A::method3",
+      "variable_name": "obj"
+    },
+    {
+      "declared_at": "GLOBAL::A::method3",
+      "declared_line": 30,
+      "line": 32,
+      "usage_location": "GLOBAL::A::method3",
+      "variable_name": "x"
+    },
+    {
+      "declared_at": "GLOBAL::A::method3",
+      "declared_line": 28,
+      "line": 32,
+      "usage_location": "GLOBAL::A::method3",
+      "variable_name": "obj"
+    },
+    {
+      "declared_at": "GLOBAL::A::method3",
+      "declared_line": 30,
+      "line": 33,
+      "usage_location": "GLOBAL::A::method3",
+      "variable_name": "x"
+    },
+    {
+      "declared_at": "GLOBAL::A::method3",
+      "declared_line": 28,
+      "line": 33,
+      "usage_location": "GLOBAL::A::method3",
+      "variable_name": "obj"
+    },
+    {
+      "declared_at": "GLOBAL::Main::main",
+      "declared_line": 8,
+      "line": 35,
+      "usage_location": "GLOBAL::A::method3",
       "variable_name": "y"
     },
     {
-      "declared_at": "None",
-      "declared_line": -1,
-      "line": 53,
-      "usage_location": "GLOBAL::A::addAndSave",
-      "variable_name": "memory"
+      "declared_at": "GLOBAL::A::method3",
+      "declared_line": 34,
+      "line": 35,
+      "usage_location": "GLOBAL::A::method3",
+      "variable_name": "tt"
     },
     {
-      "declared_at": "GLOBAL::A::addAndSave",
-      "declared_line": 51,
-      "line": 53,
-      "usage_location": "GLOBAL::A::addAndSave",
-      "variable_name": "sum"
+      "declared_at": "GLOBAL::A::method4",
+      "declared_line": 39,
+      "line": 40,
+      "usage_location": "GLOBAL::A::method4",
+      "variable_name": "z"
     },
     {
-      "declared_at": "GLOBAL::A::addAndSave",
-      "declared_line": 51,
-      "line": 54,
-      "usage_location": "GLOBAL::A::addAndSave",
-      "variable_name": "sum"
+      "declared_at": "GLOBAL::B::testScope",
+      "declared_line": 46,
+      "line": 47,
+      "usage_location": "GLOBAL::B::testScope",
+      "variable_name": "outer"
+    },
+    {
+      "declared_at": "GLOBAL::B::testScope",
+      "declared_line": 46,
+      "line": 49,
+      "usage_location": "GLOBAL::B::testScope",
+      "variable_name": "outer"
+    },
+    {
+      "declared_at": "GLOBAL::B::testScope::BLOCK#1",
+      "declared_line": 50,
+      "line": 51,
+      "usage_location": "GLOBAL::B::testScope::BLOCK#1",
+      "variable_name": "inner"
+    },
+    {
+      "declared_at": "GLOBAL::B::testScope",
+      "declared_line": 54,
+      "line": 55,
+      "usage_location": "GLOBAL::B::testScope",
+      "variable_name": "wrong"
+    },
+    {
+      "declared_at": "GLOBAL::B::testScope::BLOCK#1",
+      "declared_line": 50,
+      "line": 55,
+      "usage_location": "GLOBAL::B::testScope",
+      "variable_name": "inner"
+    },
+    {
+      "declared_at": "GLOBAL::B::testDuplicate",
+      "declared_line": 60,
+      "line": 61,
+      "usage_location": "GLOBAL::B::testDuplicate",
+      "variable_name": "var1"
+    },
+    {
+      "declared_at": "GLOBAL::B::testScope::BLOCK#1",
+      "declared_line": 50,
+      "line": 62,
+      "usage_location": "GLOBAL::B::testDuplicate",
+      "variable_name": "inner"
+    },
+    {
+      "declared_at": "GLOBAL::B::testDuplicate_3",
+      "declared_line": 74,
+      "line": 75,
+      "usage_location": "GLOBAL::B::testDuplicate_3",
+      "variable_name": "test"
     }
   ],
   "3_method_declarations": [
@@ -182,102 +182,143 @@
       "declared_return_type": "int",
       "parameter_types": [
         "int",
-        "boolean"
+        "int"
       ],
-      "actual_return_types": ["boolean"],
-      "method_name": "foo",
-      "line": 18,
-      "full_scope": "GLOBAL::A::foo"
+      "actual_return_types": ["int"],
+      "method_name": "method1",
+      "line": 15,
+      "full_scope": "GLOBAL::A::method1"
     },
     {
       "declared_return_type": "int",
       "parameter_types": [],
-      "actual_return_types": ["int"],
-      "method_name": "getResult",
-      "line": 24,
-      "full_scope": "GLOBAL::A::getResult"
-    },
-    {
-      "declared_return_type": "int",
-      "parameter_types": ["int"],
-      "actual_return_types": ["int"],
-      "method_name": "bar",
-      "line": 28,
-      "full_scope": "GLOBAL::A::bar"
+      "actual_return_types": ["boolean"],
+      "method_name": "method2",
+      "line": 22,
+      "full_scope": "GLOBAL::A::method2"
     },
     {
       "declared_return_type": "void",
       "parameter_types": [],
       "actual_return_types": [],
-      "method_name": "saveToMemory",
-      "line": 43,
-      "full_scope": "GLOBAL::A::saveToMemory"
+      "method_name": "method3",
+      "line": 27,
+      "full_scope": "GLOBAL::A::method3"
+    },
+    {
+      "declared_return_type": "void",
+      "parameter_types": [],
+      "actual_return_types": [],
+      "method_name": "method4",
+      "line": 38,
+      "full_scope": "GLOBAL::A::method4"
+    },
+    {
+      "declared_return_type": "void",
+      "parameter_types": [],
+      "actual_return_types": [],
+      "method_name": "testScope",
+      "line": 45,
+      "full_scope": "GLOBAL::B::testScope"
+    },
+    {
+      "declared_return_type": "void",
+      "parameter_types": [
+        "int",
+        "String"
+      ],
+      "actual_return_types": ["int"],
+      "method_name": "testDuplicate",
+      "line": 58,
+      "full_scope": "GLOBAL::B::testDuplicate"
     },
     {
       "declared_return_type": "int",
-      "parameter_types": [
-        "int",
-        "int"
-      ],
-      "actual_return_types": ["int"],
-      "method_name": "addAndSave",
-      "line": 50,
-      "full_scope": "GLOBAL::A::addAndSave"
+      "parameter_types": [],
+      "actual_return_types": ["void"],
+      "method_name": "testDuplicate_1",
+      "line": 65,
+      "full_scope": "GLOBAL::B::testDuplicate_1"
+    },
+    {
+      "declared_return_type": "int",
+      "parameter_types": [],
+      "actual_return_types": ["String"],
+      "method_name": "testDuplicate_2",
+      "line": 69,
+      "full_scope": "GLOBAL::B::testDuplicate_2"
+    },
+    {
+      "declared_return_type": "int",
+      "parameter_types": [],
+      "actual_return_types": ["String"],
+      "method_name": "testDuplicate_3",
+      "line": 73,
+      "full_scope": "GLOBAL::B::testDuplicate_3"
     }
   ],
   "2_method_calls": [
     {
-      "declared_at": "GLOBAL::A::getResult",
-      "call_location": "GLOBAL::A::bar",
-      "argument_count": 2,
-      "declared_line": 24,
-      "method_name": "getResult",
-      "argument_types": [
-        "String",
-        "int"
-      ],
+      "declared_at": "GLOBAL::A::method1",
+      "call_location": "GLOBAL::A::method3",
+      "argument_count": 1,
+      "declared_line": 15,
+      "method_name": "method1",
+      "argument_types": ["int"],
       "line": 31
     },
     {
-      "declared_at": "GLOBAL::A::getResult",
-      "call_location": "GLOBAL::A::bar",
-      "argument_count": 2,
-      "declared_line": 24,
-      "method_name": "getResult",
+      "declared_at": "GLOBAL::A::method1",
+      "call_location": "GLOBAL::A::method3",
+      "argument_count": 3,
+      "declared_line": 15,
+      "method_name": "method1",
       "argument_types": [
         "int",
-        "String"
+        "int",
+        "int"
       ],
       "line": 32
     },
     {
-      "declared_at": "GLOBAL::A::getResult",
-      "call_location": "GLOBAL::A::saveToMemory",
-      "argument_count": 0,
-      "declared_line": 24,
-      "method_name": "getResult",
-      "argument_types": [],
-      "line": 46
+      "declared_at": "GLOBAL::A::method1",
+      "call_location": "GLOBAL::A::method3",
+      "argument_count": 2,
+      "declared_line": 15,
+      "method_name": "method1",
+      "argument_types": [
+        "String",
+        "String"
+      ],
+      "line": 33
     },
     {
       "declared_at": "None",
-      "call_location": "GLOBAL::A::addAndSave",
-      "argument_count": 3,
+      "call_location": "GLOBAL::A::method3",
+      "argument_count": 2,
       "declared_line": -1,
-      "method_name": "compute",
+      "method_name": "testDuplicate",
       "argument_types": [
-        "int",
-        "int",
+        "String",
         "int"
       ],
-      "line": 52
+      "line": 35
+    },
+    {
+      "declared_at": "None",
+      "call_location": "GLOBAL::A::method4",
+      "argument_count": 0,
+      "declared_line": -1,
+      "method_name": "notDeclaredMethod",
+      "argument_types": [],
+      "line": 40
     }
   ],
   "1_variable_declarations": [
     {
       "line": 3,
-      "variable_name": "a",
-      "type": "A",
+      "variable_name": "x",
+      "type": "int",
       "full_scope": "GLOBAL::Main::main"
     },
     {
@@ -287,87 +328,140 @@
       "full_scope": "GLOBAL::Main::main"
     },
     {
-      "line": 5,
-      "variable_name": "x",
+      "line": 6,
+      "variable_name": "result",
       "type": "int",
       "full_scope": "GLOBAL::Main::main"
     },
     {
-      "line": 16,
-      "variable_name": "f",
+      "line": 8,
+      "variable_name": "y",
+      "type": "int",
+      "full_scope": "GLOBAL::Main::main"
+    },
+    {
+      "line": 13,
+      "variable_name": "field1",
       "type": "int",
       "full_scope": "GLOBAL::A"
     },
     {
-      "line": 18,
+      "line": 15,
       "variable_name": "a",
       "type": "int",
       "is_parameter": true,
-      "full_scope": "GLOBAL::A::foo"
+      "full_scope": "GLOBAL::A::method1"
     },
     {
-      "line": 18,
+      "line": 15,
       "variable_name": "b",
-      "type": "boolean",
+      "type": "int",
       "is_parameter": true,
-      "full_scope": "GLOBAL::A::foo"
+      "full_scope": "GLOBAL::A::method1"
     },
     {
-      "line": 19,
-      "variable_name": "z",
+      "line": 16,
+      "variable_name": "local1",
       "type": "int",
-      "full_scope": "GLOBAL::A::foo"
+      "full_scope": "GLOBAL::A::method1"
     },
     {
       "line": 28,
-      "variable_name": "p",
-      "type": "int",
-      "is_parameter": true,
-      "full_scope": "GLOBAL::A::bar"
+      "variable_name": "obj",
+      "type": "A",
+      "full_scope": "GLOBAL::A::method3"
     },
     {
       "line": 30,
-      "variable_name": "currentResult",
-      "type": "int",
-      "full_scope": "GLOBAL::A::bar"
-    },
-    {
-      "line": 35,
-      "variable_name": "t",
-      "type": "int",
-      "full_scope": "GLOBAL::A::bar"
-    },
-    {
-      "line": 44,
       "variable_name": "x",
       "type": "int",
-      "full_scope": "GLOBAL::A::saveToMemory"
+      "full_scope": "GLOBAL::A::method3"
     },
     {
-      "line": 45,
-      "variable_name": "x",
+      "line": 34,
+      "variable_name": "tt",
+      "type": "B",
+      "full_scope": "GLOBAL::A::method3"
+    },
+    {
+      "line": 39,
+      "variable_name": "z",
       "type": "int",
-      "full_scope": "GLOBAL::A::saveToMemory"
+      "full_scope": "GLOBAL::A::method4"
+    },
+    {
+      "line": 46,
+      "variable_name": "outer",
+      "type": "int",
+      "full_scope": "GLOBAL::B::testScope"
     },
     {
       "line": 50,
-      "variable_name": "x",
+      "variable_name": "inner",
       "type": "int",
-      "is_parameter": true,
-      "full_scope": "GLOBAL::A::addAndSave"
+      "full_scope": "GLOBAL::B::testScope::BLOCK#1"
     },
     {
-      "line": 50,
-      "variable_name": "y",
+      "line": 54,
+      "variable_name": "wrong",
       "type": "int",
-      "is_parameter": true,
-      "full_scope": "GLOBAL::A::addAndSave"
+      "full_scope": "GLOBAL::B::testScope"
     },
     {
-      "line": 51,
-      "variable_name": "sum",
+      "line": 58,
+      "variable_name": "test1",
       "type": "int",
-      "full_scope": "GLOBAL::A::addAndSave"
+      "is_parameter": true,
+      "full_scope": "GLOBAL::B::testDuplicate"
+    },
+    {
+      "line": 58,
+      "variable_name": "test1",
+      "type": "String",
+      "is_parameter": true,
+      "full_scope": "GLOBAL::B::testDuplicate"
+    },
+    {
+      "line": 59,
+      "variable_name": "var1",
+      "type": "int",
+      "full_scope": "GLOBAL::B::testDuplicate"
+    },
+    {
+      "line": 60,
+      "variable_name": "var1",
+      "type": "int",
+      "full_scope": "GLOBAL::B::testDuplicate"
+    },
+    {
+      "line": 74,
+      "variable_name": "test",
+      "type": "String",
+      "full_scope": "GLOBAL::B::testDuplicate_3"
+    },
+    {
+      "line": 81,
+      "variable_name": "data1",
+      "type": "int",
+      "full_scope": "GLOBAL::C"
+    },
+    {
+      "line": 85,
+      "variable_name": "data2",
+      "type": "int",
+      "full_scope": "GLOBAL::D"
+    },
+    {
+      "line": 89,
+      "variable_name": "data3",
+      "type": "int",
+      "full_scope": "GLOBAL::E"
+    },
+    {
+      "line": 94,
+      "variable_name": "data",
+      "type": "int",
+      "full_scope": "GLOBAL::F"
     }
   ]
 }

@@ -1637,6 +1637,30 @@ class ErrorDetection {
             return ans;
         }
 
+        bool isparent(const string& declaredScope, const string& usageScope) {
+            string parent = normalizeScope(declaredScope);
+            string child = normalizeScope(usageScope);
+            
+            // parent is prefix of child
+            if (child.find(parent) == 0) {
+                if (child.length() == parent.length()) {
+                    return true; // Same scope
+                }
+                // Check if next character is "::"
+                if (child[parent.length()] == ':' && child[parent.length() + 1] == ':') {
+                    return true;
+                }
+            }
+            return false;
+        }
+        string normalizeScope(const string& scope) {
+            string result = scope;
+            // Remove GLOBAL::
+            if (result.find("GLOBAL::") == 0) {
+                result = result.substr(8);
+            }
+            return result;
+        }
         vector<Error> Detect_Invalid_Variable_Access(){
             vector<Error> ans;
             size_t error_num=0;
@@ -1645,14 +1669,21 @@ class ErrorDetection {
                 string varName = usage.at("variable_name");
                 string usageLocation = usage.at("usage_location");  
                 size_t usageLine = stoi(usage.at("line"));
+                size_t declaredLine = stoi(usage.at("declared_line"));
                 string declaredAt = usage.at("declared_at");        
 
-                if (declaredAt == "None" || declaredAt.empty()) {
+                if (declaredAt == "None" || declaredAt.empty() || (declaredLine==-1 || declaredLine>usageLine)) {
                     ans.emplace_back(usageLine, ErrorType::InvalidVariableAccess);
                     error_num++;
                     continue;
                 }
+                // solution 1 
+                if (!isparent(declaredAt,usageLocation)) {
+                    ans.push_back(Error(usageLine, ErrorType::InvalidVariableAccess));
+                    error_num++;
+                }
 
+                /*
                 if (usageLocation.find(declaredAt) == 0) {
                     
 
@@ -1688,11 +1719,12 @@ class ErrorDetection {
                     ans.emplace_back(usageLine, ErrorType::InvalidVariableAccess);
                     error_num++;
                 }
-            }
+                */
 
-            return ans;
         }
 
+        return ans;
+    }
         void PrintDetectedErrors(ErrorType type=ErrorType::DuplicateVariableInScope){
 
             size_t error_num=0;

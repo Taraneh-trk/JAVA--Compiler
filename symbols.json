@@ -35,9 +35,9 @@
   {
     "access": "local",
     "line": 3,
-    "dataType": "A",
+    "dataType": "int",
     "scope": "Main::main",
-    "name": "a",
+    "name": "x",
     "initialValue": "null",
     "symbolType": "variable"
   },
@@ -52,17 +52,26 @@
   },
   {
     "access": "local",
-    "line": 5,
+    "line": 6,
     "dataType": "int",
     "scope": "Main::main",
-    "name": "x",
+    "name": "result",
     "initialValue": "null",
     "symbolType": "variable"
   },
   {
-    "parent": "B",
+    "access": "local",
+    "line": 8,
+    "dataType": "int",
+    "scope": "Main::main",
+    "name": "y",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "parent": null,
     "interfaces": [],
-    "line": 15,
+    "line": 12,
     "scope": "GLOBAL",
     "name": "A",
     "isAbstract": false,
@@ -70,46 +79,46 @@
   },
   {
     "access": "default",
-    "line": 16,
+    "line": 13,
     "dataType": "int",
     "scope": "A",
-    "name": "f",
+    "name": "field1",
     "initialValue": "null",
     "symbolType": "field"
   },
   {
-    "line": 18,
+    "line": 15,
     "dataType": "int",
-    "scope": "A::foo",
+    "scope": "A::method1",
     "name": "a",
     "symbolType": "parameter"
   },
   {
-    "line": 18,
-    "dataType": "boolean",
-    "scope": "A::foo",
+    "line": 15,
+    "dataType": "int",
+    "scope": "A::method1",
     "name": "b",
     "symbolType": "parameter"
   },
   {
     "access": "public",
-    "line": 18,
+    "line": 15,
     "scope": "A",
-    "name": "foo",
+    "name": "method1",
     "isOverride": false,
     "isAbstract": false,
     "parameters": [
       {
-        "line": 18,
+        "line": 15,
         "dataType": "int",
-        "scope": "A::foo",
+        "scope": "A::method1",
         "name": "a",
         "symbolType": "parameter"
       },
       {
-        "line": 18,
-        "dataType": "boolean",
-        "scope": "A::foo",
+        "line": 15,
+        "dataType": "int",
+        "scope": "A::method1",
         "name": "b",
         "symbolType": "parameter"
       }
@@ -119,18 +128,18 @@
   },
   {
     "access": "local",
-    "line": 19,
+    "line": 16,
     "dataType": "int",
-    "scope": "A::foo",
-    "name": "z",
+    "scope": "A::method1",
+    "name": "local1",
     "initialValue": "null",
     "symbolType": "variable"
   },
   {
     "access": "public",
-    "line": 24,
+    "line": 22,
     "scope": "A",
-    "name": "getResult",
+    "name": "method2",
     "isOverride": false,
     "isAbstract": false,
     "parameters": [],
@@ -138,52 +147,10 @@
     "returnType": "int"
   },
   {
-    "line": 28,
-    "dataType": "int",
-    "scope": "A::bar",
-    "name": "p",
-    "symbolType": "parameter"
-  },
-  {
     "access": "public",
-    "line": 28,
+    "line": 27,
     "scope": "A",
-    "name": "bar",
-    "isOverride": false,
-    "isAbstract": false,
-    "parameters": [{
-      "line": 28,
-      "dataType": "int",
-      "scope": "A::bar",
-      "name": "p",
-      "symbolType": "parameter"
-    }],
-    "symbolType": "method",
-    "returnType": "int"
-  },
-  {
-    "access": "local",
-    "line": 30,
-    "dataType": "int",
-    "scope": "A::bar",
-    "name": "currentResult",
-    "initialValue": "null",
-    "symbolType": "variable"
-  },
-  {
-    "access": "local",
-    "line": 35,
-    "dataType": "int",
-    "scope": "A::bar::BLOCK#1",
-    "name": "t",
-    "initialValue": "null",
-    "symbolType": "variable"
-  },
-  {
-    "access": "public",
-    "line": 43,
-    "scope": "A",
-    "name": "saveToMemory",
+    "name": "method3",
     "isOverride": false,
     "isAbstract": false,
     "parameters": [],
@@ -192,87 +159,268 @@
   },
   {
     "access": "local",
-    "line": 44,
+    "line": 28,
+    "dataType": "A",
+    "scope": "A::method3",
+    "name": "obj",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "line": 30,
     "dataType": "int",
-    "scope": "A::saveToMemory",
+    "scope": "A::method3",
     "name": "x",
     "initialValue": "null",
     "symbolType": "variable"
   },
   {
     "access": "local",
-    "line": 45,
-    "dataType": "int",
-    "scope": "A::saveToMemory",
-    "name": "x",
+    "line": 34,
+    "dataType": "B",
+    "scope": "A::method3",
+    "name": "tt",
     "initialValue": "null",
     "symbolType": "variable"
-  },
-  {
-    "line": 50,
-    "dataType": "int",
-    "scope": "A::addAndSave",
-    "name": "x",
-    "symbolType": "parameter"
-  },
-  {
-    "line": 50,
-    "dataType": "int",
-    "scope": "A::addAndSave",
-    "name": "y",
-    "symbolType": "parameter"
   },
   {
     "access": "public",
-    "line": 50,
+    "line": 38,
     "scope": "A",
-    "name": "addAndSave",
+    "name": "method4",
     "isOverride": false,
     "isAbstract": false,
-    "parameters": [
-      {
-        "line": 50,
-        "dataType": "int",
-        "scope": "A::addAndSave",
-        "name": "x",
-        "symbolType": "parameter"
-      },
-      {
-        "line": 50,
-        "dataType": "int",
-        "scope": "A::addAndSave",
-        "name": "y",
-        "symbolType": "parameter"
-      }
-    ],
+    "parameters": [],
     "symbolType": "method",
-    "returnType": "int"
+    "returnType": "void"
   },
   {
     "access": "local",
-    "line": 51,
+    "line": 39,
     "dataType": "int",
-    "scope": "A::addAndSave",
-    "name": "sum",
+    "scope": "A::method4",
+    "name": "z",
     "initialValue": "null",
     "symbolType": "variable"
   },
   {
-    "parent": "C",
+    "parent": null,
     "interfaces": [],
-    "line": 58,
+    "line": 44,
     "scope": "GLOBAL",
     "name": "B",
     "isAbstract": false,
     "symbolType": "class"
   },
   {
-    "parent": "A",
+    "access": "public",
+    "line": 45,
+    "scope": "B",
+    "name": "testScope",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [],
+    "symbolType": "method",
+    "returnType": "void"
+  },
+  {
+    "access": "local",
+    "line": 46,
+    "dataType": "int",
+    "scope": "B::testScope",
+    "name": "outer",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "line": 50,
+    "dataType": "int",
+    "scope": "B::testScope::BLOCK#1",
+    "name": "inner",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "line": 54,
+    "dataType": "int",
+    "scope": "B::testScope",
+    "name": "wrong",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "line": 58,
+    "dataType": "int",
+    "scope": "B::testDuplicate",
+    "name": "test1",
+    "symbolType": "parameter"
+  },
+  {
+    "line": 58,
+    "dataType": "String",
+    "scope": "B::testDuplicate",
+    "name": "test1",
+    "symbolType": "parameter"
+  },
+  {
+    "access": "public",
+    "line": 58,
+    "scope": "B",
+    "name": "testDuplicate",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [
+      {
+        "line": 58,
+        "dataType": "int",
+        "scope": "B::testDuplicate",
+        "name": "test1",
+        "symbolType": "parameter"
+      },
+      {
+        "line": 58,
+        "dataType": "String",
+        "scope": "B::testDuplicate",
+        "name": "test1",
+        "symbolType": "parameter"
+      }
+    ],
+    "symbolType": "method",
+    "returnType": "void"
+  },
+  {
+    "access": "local",
+    "line": 59,
+    "dataType": "int",
+    "scope": "B::testDuplicate",
+    "name": "var1",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "access": "local",
+    "line": 60,
+    "dataType": "int",
+    "scope": "B::testDuplicate",
+    "name": "var1",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "access": "public",
+    "line": 65,
+    "scope": "B",
+    "name": "testDuplicate_1",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [],
+    "symbolType": "method",
+    "returnType": "int"
+  },
+  {
+    "access": "public",
+    "line": 69,
+    "scope": "B",
+    "name": "testDuplicate_2",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [],
+    "symbolType": "method",
+    "returnType": "int"
+  },
+  {
+    "access": "public",
+    "line": 73,
+    "scope": "B",
+    "name": "testDuplicate_3",
+    "isOverride": false,
+    "isAbstract": false,
+    "parameters": [],
+    "symbolType": "method",
+    "returnType": "int"
+  },
+  {
+    "access": "local",
+    "line": 74,
+    "dataType": "String",
+    "scope": "B::testDuplicate_3",
+    "name": "test",
+    "initialValue": "null",
+    "symbolType": "variable"
+  },
+  {
+    "parent": "D",
     "interfaces": [],
-    "line": 61,
+    "line": 80,
     "scope": "GLOBAL",
     "name": "C",
     "isAbstract": false,
     "symbolType": "class"
+  },
+  {
+    "access": "default",
+    "line": 81,
+    "dataType": "int",
+    "scope": "C",
+    "name": "data1",
+    "initialValue": "null",
+    "symbolType": "field"
+  },
+  {
+    "parent": "E",
+    "interfaces": [],
+    "line": 84,
+    "scope": "GLOBAL",
+    "name": "D",
+    "isAbstract": false,
+    "symbolType": "class"
+  },
+  {
+    "access": "default",
+    "line": 85,
+    "dataType": "int",
+    "scope": "D",
+    "name": "data2",
+    "initialValue": "null",
+    "symbolType": "field"
+  },
+  {
+    "parent": "C",
+    "interfaces": [],
+    "line": 88,
+    "scope": "GLOBAL",
+    "name": "E",
+    "isAbstract": false,
+    "symbolType": "class"
+  },
+  {
+    "access": "default",
+    "line": 89,
+    "dataType": "int",
+    "scope": "E",
+    "name": "data3",
+    "initialValue": "null",
+    "symbolType": "field"
+  },
+  {
+    "parent": "F",
+    "interfaces": [],
+    "line": 93,
+    "scope": "GLOBAL",
+    "name": "F",
+    "isAbstract": false,
+    "symbolType": "class"
+  },
+  {
+    "access": "default",
+    "line": 94,
+    "dataType": "int",
+    "scope": "F",
+    "name": "data",
+    "initialValue": "null",
+    "symbolType": "field"
   }
 ]
