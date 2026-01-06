@@ -1558,13 +1558,177 @@ class ErrorDetection {
             return ans;
         }
 
-        vector<Error> Detect_Return_Type_Mismatch(){
+        vector<Error> Detect_Return_Type_Mismatch() {
             vector<Error> ans;
-            size_t error_num=0;
+            size_t error_num = 0;
 
+
+            struct MethodCtx {
+                string methodName;
+                string classScope;
+                string methodScope;
+                string returnType;
+                size_t startLine;
+                bool valid;
+            };
+
+            unordered_map<size_t, MethodCtx> methods;
+
+            for (const auto& m : SementicData.methodDeclarations) {
+
+                if (!m.count("method_name") ||
+                    !m.count("full_scope") ||
+                    !m.count("line"))
+                    continue;
+
+                MethodCtx ctx;
+                ctx.methodName = m.at("method_name");
+                ctx.startLine = stoll(m.at("line"));
+                ctx.valid = false;
+
+                string fullScope = m.at("full_scope");
+                if (fullScope.rfind("GLOBAL::", 0) == 0)
+                    fullScope = fullScope.substr(8);
+
+                ctx.methodScope = fullScope;
+
+                size_t pos = fullScope.rfind("::");
+                if (pos == string::npos) continue;
+
+                ctx.classScope = fullScope.substr(0, pos);
+
+                Symbol methodSym =
+                    symbol_table->lookup(ctx.methodName, ctx.classScope);
+
+                if (methodSym.getName() == "" ||
+                    methodSym.kind != IdentifierKind::Method)
+                    continue;
+
+                auto mi = dynamic_pointer_cast<MethodInfo>(methodSym.data);
+                if (!mi) continue;
+
+                ctx.returnType = mi->returnType.name;
+                ctx.valid = true;
+
+                methods[ctx.startLine] = ctx;
+            }
+
+            stringstream ss(buffer);
+            string line;
+            size_t lineNo = 0;
+
+            bool inMethod = false;
+            int braceDepth = 0;
+            MethodCtx cur;
+
+            while (getline(ss, line)) {
+                lineNo++;
+
+                if (!inMethod) {
+                    auto it = methods.find(lineNo);
+                    if (it != methods.end() && it->second.valid) {
+                        cur = it->second;
+                        inMethod = true;
+                        braceDepth = 0;
+                    }
+                }
+
+                if (!inMethod) continue;
+
+                braceDepth += count(line.begin(), line.end(), '{');
+                braceDepth -= count(line.begin(), line.end(), '}');
+
+                size_t p = line.find("return");
+                string retExpr = "";
+
+                if (p != string::npos) {
+                    if (!(p > 0 && isalnum(line[p - 1]))) {
+                        p += 6;
+                        while (p < line.size() && isspace(line[p])) p++;
+                        if (p < line.size()) {
+                            size_t end = line.find(';', p);
+                            if (end != string::npos) {
+                                retExpr = line.substr(p, end - p);
+                                retExpr.erase(0, retExpr.find_first_not_of(" \t"));
+                                retExpr.erase(retExpr.find_last_not_of(" \t;") + 1);
+                            }
+                        }
+                    }
+                }
+
+                if (!retExpr.empty() || line.find("return") != string::npos) {
+
+                    if (retExpr.empty()) {
+                        if (cur.returnType != "void") {
+                            ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
+                            error_num++;
+                        }
+                    }
+                    else {
+                        if (cur.returnType == "void") {
+                            ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
+                            error_num++;
+                        }
+                        else {
+                            string litType = "";
+
+                            if (retExpr == "true" || retExpr == "false")
+                                litType = "boolean";
+                            else {
+                                bool isInt = !retExpr.empty();
+                                for (char c : retExpr) {
+                                    if (!isdigit(c)) { isInt = false; break; }
+                                }
+                                if (isInt) litType = "int";
+                                else if (retExpr.size() >= 2 &&
+                                         retExpr.front() == '"' &&
+                                         retExpr.back() == '"')
+                                    litType = "String";
+                            }
+
+                            if (!litType.empty()) {
+                                if (litType != cur.returnType) {
+                                    ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
+                                    error_num++;
+                                }
+                            }
+                            else {
+                                Symbol retSym =
+                                    symbol_table->lookup(retExpr, cur.methodScope);
+
+                                if (retSym.getName() != "") {
+                                    string actualType = "";
+
+                                    if (retSym.kind == IdentifierKind::Variable) {
+                                        auto v = dynamic_pointer_cast<VariableInfo>(retSym.data);
+                                        if (v) actualType = v->type.name;
+                                    }
+                                    else if (retSym.kind == IdentifierKind::Parameter) {
+                                        auto p = dynamic_pointer_cast<ParameterInfo>(retSym.data);
+                                        if (p) actualType = p->type.name;
+                                    }
+
+                                    if (!actualType.empty() &&
+                                        actualType != cur.returnType) {
+                                        ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
+                                        error_num++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (braceDepth <= 0) {
+                    inMethod = false;
+                }
+            }
 
             return ans;
         }
+
+
+
 
         vector<Error> Detect_Cyclic_Inheritance(){
             vector<Error> ans;
@@ -1640,7 +1804,7 @@ class ErrorDetection {
         bool isparent(const string& declaredScope, const string& usageScope) {
             string parent = normalizeScope(declaredScope);
             string child = normalizeScope(usageScope);
-            
+
             // parent is prefix of child
             if (child.find(parent) == 0) {
                 if (child.length() == parent.length()) {
@@ -1664,20 +1828,20 @@ class ErrorDetection {
         vector<Error> Detect_Invalid_Variable_Access(){
             vector<Error> ans;
             size_t error_num=0;
-            
+
             for (const auto& usage : SementicData.variableUsages) {
                 string varName = usage.at("variable_name");
-                string usageLocation = usage.at("usage_location");  
+                string usageLocation = usage.at("usage_location");
                 size_t usageLine = stoi(usage.at("line"));
                 size_t declaredLine = stoi(usage.at("declared_line"));
-                string declaredAt = usage.at("declared_at");        
+                string declaredAt = usage.at("declared_at");
 
                 if (declaredAt == "None" || declaredAt.empty() || (declaredLine==-1 || declaredLine>usageLine)) {
                     ans.emplace_back(usageLine, ErrorType::InvalidVariableAccess);
                     error_num++;
                     continue;
                 }
-                // solution 1 
+                // solution 1
                 if (!isparent(declaredAt,usageLocation)) {
                     ans.push_back(Error(usageLine, ErrorType::InvalidVariableAccess));
                     error_num++;
@@ -1685,12 +1849,12 @@ class ErrorDetection {
 
                 /*
                 if (usageLocation.find(declaredAt) == 0) {
-                    
+
 
                     if (usageLocation == declaredAt) {
                         continue;
                     }
-                    
+
                     string expectedPrefix = declaredAt + "::";
                     if (usageLocation.find(expectedPrefix) == 0) {
                         continue;
@@ -1698,23 +1862,23 @@ class ErrorDetection {
                 }
 
                 bool found = false;
-                
+
                 Scope* usageScope = symbol_table->move_to_scope(usageLocation);
-    
+
                 if (usageScope) {
-                    Symbol* sym = usageScope->lookup(varName); 
+                    Symbol* sym = usageScope->lookup(varName);
                     if (sym && !sym->getName().empty()) {
                         found = true;
                     }
                 }
-                
+
                 if (!found) {
                     Symbol sym = symbol_table->lookup(varName, declaredAt);
                     if (!sym.getName().empty()) {
                         found = false;
                     }
                 }
-                
+
                 if (!found) {
                     ans.emplace_back(usageLine, ErrorType::InvalidVariableAccess);
                     error_num++;
