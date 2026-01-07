@@ -1,0 +1,211 @@
+========================================================================
+    Java-- Compiler - Error Detection
+========================================================================
+
+Loading symbol table from symbols.json...
+[Info] Parsed 42 symbols from JSON
+[Info] Creating scope hierarchy...
+[Info] Inserting symbols...
+[Info] Parsed 1 symbols from JSON
+[Warning] Duplicate symbol 'x' in scope 'Main::main' - keeping first occurrence
+[Info] Parsed 2 symbols from JSON
+[Info] Parsed 2 symbols from JSON
+[Warning] Duplicate symbol 'var1' in scope 'B::testDuplicate' - keeping first occurrence
+[Info] Successfully loaded 43 symbols from JSON file
+
+==================== Symbol Table ====================
+Index Name                Kind           Type           Scope                    Initial Value  
+------------------------------------------------------------------------------------------------
+0     Main                class          N/A            GLOBAL                   N/A
+1     main                method         void           Main                     N/A
+2     args                parameter      String[]       Main::main               N/A
+3     x                   variable       int            Main::main               null
+4     x                   variable       int            Main::main               null
+5     result              variable       int            Main::main               null
+6     y                   variable       int            Main::main               null
+7     A                   class          N/A            GLOBAL                   N/A
+8     field1              field          int            A                        null
+9     a                   parameter      int            A::method1               N/A
+10    b                   parameter      int            A::method1               N/A
+11    method1             method         int            A                        N/A
+12    local1              variable       int            A::method1               null
+13    method2             method         int            A                        N/A
+14    method3             method         void           A                        N/A
+15    obj                 variable       A              A::method3               null
+16    x                   variable       int            A::method3               null
+17    tt                  variable       B              A::method3               null
+18    method4             method         void           A                        N/A
+19    z                   variable       int            A::method4               null
+20    B                   class          N/A            GLOBAL                   N/A
+21    testScope           method         void           B                        N/A
+22    outer               variable       int            B::testScope             null
+23    inner               variable       int            B::testScope::BLOCK#1    null
+24    wrong               variable       int            B::testScope             null
+25    test1               parameter      int            B::testDuplicate         N/A
+26    test1               parameter      String         B::testDuplicate         N/A
+27    testDuplicate       method         void           B                        N/A
+28    var1                variable       int            B::testDuplicate         null
+29    var1                variable       int            B::testDuplicate         null
+30    testDuplicate_1     method         int            B                        N/A
+31    testDuplicate_2     method         int            B                        N/A
+32    testDuplicate_3     method         int            B                        N/A
+33    test                variable       String         B::testDuplicate_3       null
+34    C                   class          N/A            GLOBAL                   N/A
+35    data1               field          int            C                        null
+36    D                   class          N/A            GLOBAL                   N/A
+37    data2               field          int            D                        null
+38    E                   class          N/A            GLOBAL                   N/A
+39    data3               field          int            E                        null
+40    F                   class          N/A            GLOBAL                   N/A
+41    data                field          int            F                        null
+======================================================
+
+
+==================== Symbol Table Scope Structure ====================
+Scope: GLOBAL (full: GLOBAL)
+  - [Class] F (scope: GLOBAL) extends F
+  - [Class] E (scope: GLOBAL) extends C
+  - [Class] B (scope: GLOBAL)
+  - [Class] D (scope: GLOBAL) extends E
+  - [Class] C (scope: GLOBAL) extends D
+  - [Class] A (scope: GLOBAL)
+  - [Class] Main (scope: GLOBAL)
+    Scope: Main (full: GLOBAL::Main)
+      - [Method] main -> void (scope: Main) (public)
+                Parameters:
+                     - args : String[]
+        Scope: main (full: GLOBAL::Main::main)
+          - [Variable] y : int (scope: Main::main) (index: 6) (local)
+          - [Variable] result : int (scope: Main::main) (index: 5) (local)
+          - [Variable] x : int (scope: Main::main) (index: 3) (local)
+          - [Parameter] args : String[] (scope: Main::main)
+    Scope: A (full: GLOBAL::A)
+      - [Method] method4 -> void (scope: A) (public)
+      - [Method] method3 -> void (scope: A) (public)
+      - [Method] method2 -> int (scope: A) (public)
+      - [Method] method1 -> int (scope: A) (public)
+                Parameters:
+                     - a : int
+                     - b : int
+      - [Field] field1 : int (scope: A) (default)
+        Scope: method1 (full: GLOBAL::A::method1)
+          - [Variable] local1 : int (scope: A::method1) (index: 12) (local)
+          - [Parameter] b : int (scope: A::method1)
+          - [Parameter] a : int (scope: A::method1)
+        Scope: method3 (full: GLOBAL::A::method3)
+          - [Variable] tt : B (scope: A::method3) (index: 17) (local)
+          - [Variable] x : int (scope: A::method3) (index: 16) (local)
+          - [Variable] obj : A (scope: A::method3) (index: 15) (local)
+        Scope: method4 (full: GLOBAL::A::method4)
+          - [Variable] z : int (scope: A::method4) (index: 19) (local)
+        Scope: method2 (full: GLOBAL::A::method2)
+    Scope: B (full: GLOBAL::B)
+      - [Method] testDuplicate_2 -> int (scope: B) (public)
+      - [Method] testDuplicate_1 -> int (scope: B) (public)
+      - [Method] testDuplicate_3 -> int (scope: B) (public)
+      - [Method] testDuplicate -> void (scope: B) (public)
+                Parameters:
+                     - test1 : int
+                     - test1 : String
+      - [Method] testScope -> void (scope: B) (public)
+        Scope: testScope (full: GLOBAL::B::testScope)
+          - [Variable] wrong : int (scope: B::testScope) (index: 24) (local)
+          - [Variable] outer : int (scope: B::testScope) (index: 22) (local)
+            Scope: BLOCK#1 (full: GLOBAL::B::testScope::BLOCK#1)
+              - [Variable] inner : int (scope: B::testScope::BLOCK#1) (index: 23) (local)
+        Scope: testDuplicate (full: GLOBAL::B::testDuplicate)
+          - [Variable] var1 : int (scope: B::testDuplicate) (index: 28) (local)
+          - [Parameter] test1 : int (scope: B::testDuplicate)
+        Scope: testDuplicate_3 (full: GLOBAL::B::testDuplicate_3)
+          - [Variable] test : String (scope: B::testDuplicate_3) (index: 33) (local)
+        Scope: testDuplicate_1 (full: GLOBAL::B::testDuplicate_1)
+        Scope: testDuplicate_2 (full: GLOBAL::B::testDuplicate_2)
+    Scope: C (full: GLOBAL::C)
+      - [Field] data1 : int (scope: C) (default)
+    Scope: D (full: GLOBAL::D)
+      - [Field] data2 : int (scope: D) (default)
+    Scope: E (full: GLOBAL::E)
+      - [Field] data3 : int (scope: E) (default)
+    Scope: F (full: GLOBAL::F)
+      - [Field] data : int (scope: F) (default)
+=====================================================================
+
+[Info] Parsed 24 items for category: 4_variable_usages
+[Info] Parsed 10 items for category: 3_method_declarations
+[Info] Parsed 5 items for category: 2_method_calls
+[Info] Parsed 24 items for category: 1_variable_declarations
+[Info] Loaded 24 variable declarations
+[Info] Loaded 5 method calls
+[Info] Loaded 10 method declarations
+[Info] Loaded 24 variable usages
+
+==================== Detected Errors ====================
+
+[Error] Error happened in line 4
+Error Type is {  Duplicate Variable In Scope  }
+
+[Error] Error happened in line 7
+Error Type is {  Invalid Variable Access  }
+
+[Error] Error happened in line 23
+Error Type is {  Return Type Mismatch  }
+
+[Error] Error happened in line 31
+Error Type is {  Method Call Signature Mismatch  }
+
+[Error] Error happened in line 32
+Error Type is {  Method Call Signature Mismatch  }
+
+[Error] Error happened in line 33
+Error Type is {  Method Call Signature Mismatch  }
+
+[Error] Error happened in line 35
+Error Type is {  Method Call Signature Mismatch  }
+
+[Error] Error happened in line 35
+Error Type is {  Invalid Variable Access  }
+
+[Error] Error happened in line 40
+Error Type is {  Method Call Signature Mismatch  }
+
+[Error] Error happened in line 55
+Error Type is {  Invalid Variable Access  }
+
+[Error] Error happened in line 58
+Error Type is {  Duplicate Variable In Scope  }
+
+[Error] Error happened in line 60
+Error Type is {  Duplicate Variable In Scope  }
+
+[Error] Error happened in line 62
+Error Type is {  Invalid Variable Access  }
+
+[Error] Error happened in line 62
+Error Type is {  Return Type Mismatch  }
+
+[Error] Error happened in line 67
+Error Type is {  Return Type Mismatch  }
+
+[Error] Error happened in line 71
+Error Type is {  Return Type Mismatch  }
+
+[Error] Error happened in line 75
+Error Type is {  Return Type Mismatch  }
+
+[Error] Error happened in line 80
+Error Type is {  Cyclic Inheritance  }
+
+[Error] Error happened in line 84
+Error Type is {  Cyclic Inheritance  }
+
+[Error] Error happened in line 88
+Error Type is {  Cyclic Inheritance  }
+
+[Error] Error happened in line 93
+Error Type is {  Cyclic Inheritance  }
+
+=========================================================
+
+Error count : 21
+
+Thank you for using Java-- Compiler!
