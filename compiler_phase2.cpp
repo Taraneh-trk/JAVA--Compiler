@@ -1562,167 +1562,217 @@ class ErrorDetection {
             vector<Error> ans;
             size_t error_num = 0;
 
+            for (const auto& method : SementicData.methodDeclarations) {
 
-            struct MethodCtx {
-                string methodName;
-                string classScope;
-                string methodScope;
-                string returnType;
-                size_t startLine;
-                bool valid;
-            };
-
-            unordered_map<size_t, MethodCtx> methods;
-
-            for (const auto& m : SementicData.methodDeclarations) {
-
-                if (!m.count("method_name") ||
-                    !m.count("full_scope") ||
-                    !m.count("line"))
+                if (!method.count("method_name") || !method.count("full_scope") || !method.count("line"))
                     continue;
 
-                MethodCtx ctx;
-                ctx.methodName = m.at("method_name");
-                ctx.startLine = stoll(m.at("line"));
-                ctx.valid = false;
+                string methodName = method.at("method_name");
+                int startLine = stoi(method.at("line"));
+                string actualReturnTypes;
+                if(method.count("actual_return_types")!=0){
+                    actualReturnTypes = method.at("actual_return_types"); 
+                }else{
+                    actualReturnTypes = "void";
+                }
 
-                string fullScope = m.at("full_scope");
+                string fullScope = method.at("full_scope");
                 if (fullScope.rfind("GLOBAL::", 0) == 0)
                     fullScope = fullScope.substr(8);
 
-                ctx.methodScope = fullScope;
 
                 size_t pos = fullScope.rfind("::");
                 if (pos == string::npos) continue;
 
-                ctx.classScope = fullScope.substr(0, pos);
+                string classScope = fullScope.substr(0, pos);
 
-                Symbol methodSym =
-                    symbol_table->lookup(ctx.methodName, ctx.classScope);
+                // solution 1
+                Symbol methodSym = symbol_table->lookup(methodName, classScope);
 
-                if (methodSym.getName() == "" ||
-                    methodSym.kind != IdentifierKind::Method)
-                    continue;
+                if (methodSym.getName() != "") {
+                    if (methodSym.kind == IdentifierKind::Method) {
+                        auto methodData = dynamic_pointer_cast<MethodInfo>(methodSym.data);
+                        if (methodData) {
+                            string declaredReturnType = methodData->returnType.name;
+                            
+                            if (declaredReturnType != actualReturnTypes) {
+                                ans.push_back(Error(startLine, ErrorType::ReturnTypeMismatch));
+                                error_num++;
+                            }
+                        }
+                    }
+                }
 
-                auto mi = dynamic_pointer_cast<MethodInfo>(methodSym.data);
-                if (!mi) continue;
 
-                ctx.returnType = mi->returnType.name;
-                ctx.valid = true;
-
-                methods[ctx.startLine] = ctx;
+                // solution 2
+                // string declaredReturnType = method.at("declared_return_type");
+                // if (declaredReturnType != actualReturnTypes) {
+                //     ans.push_back(Error(startLine, ErrorType::ReturnTypeMismatch));
+                //     error_num++;
+                // }
             }
 
-            stringstream ss(buffer);
-            string line;
-            size_t lineNo = 0;
+            //solution 3
+            // struct MethodCtx {
+            //     string methodName;
+            //     string classScope;
+            //     string methodScope;
+            //     string returnType;
+            //     size_t startLine;
+            //     bool valid;
+            // };
 
-            bool inMethod = false;
-            int braceDepth = 0;
-            MethodCtx cur;
+            // unordered_map<size_t, MethodCtx> methods;
 
-            while (getline(ss, line)) {
-                lineNo++;
+            // for (const auto& m : SementicData.methodDeclarations) {
 
-                if (!inMethod) {
-                    auto it = methods.find(lineNo);
-                    if (it != methods.end() && it->second.valid) {
-                        cur = it->second;
-                        inMethod = true;
-                        braceDepth = 0;
-                    }
-                }
+            //     if (!m.count("method_name") ||
+            //         !m.count("full_scope") ||
+            //         !m.count("line"))
+            //         continue;
 
-                if (!inMethod) continue;
+            //     MethodCtx ctx;
+            //     ctx.methodName = m.at("method_name");
+            //     ctx.startLine = stoll(m.at("line"));
+            //     ctx.valid = false;
 
-                braceDepth += count(line.begin(), line.end(), '{');
-                braceDepth -= count(line.begin(), line.end(), '}');
+            //     string fullScope = m.at("full_scope");
+            //     if (fullScope.rfind("GLOBAL::", 0) == 0)
+            //         fullScope = fullScope.substr(8);
 
-                size_t p = line.find("return");
-                string retExpr = "";
+            //     ctx.methodScope = fullScope;
 
-                if (p != string::npos) {
-                    if (!(p > 0 && isalnum(line[p - 1]))) {
-                        p += 6;
-                        while (p < line.size() && isspace(line[p])) p++;
-                        if (p < line.size()) {
-                            size_t end = line.find(';', p);
-                            if (end != string::npos) {
-                                retExpr = line.substr(p, end - p);
-                                retExpr.erase(0, retExpr.find_first_not_of(" \t"));
-                                retExpr.erase(retExpr.find_last_not_of(" \t;") + 1);
-                            }
-                        }
-                    }
-                }
+            //     size_t pos = fullScope.rfind("::");
+            //     if (pos == string::npos) continue;
 
-                if (!retExpr.empty() || line.find("return") != string::npos) {
+            //     ctx.classScope = fullScope.substr(0, pos);
 
-                    if (retExpr.empty()) {
-                        if (cur.returnType != "void") {
-                            ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
-                            error_num++;
-                        }
-                    }
-                    else {
-                        if (cur.returnType == "void") {
-                            ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
-                            error_num++;
-                        }
-                        else {
-                            string litType = "";
+            //     Symbol methodSym =
+            //         symbol_table->lookup(ctx.methodName, ctx.classScope);
 
-                            if (retExpr == "true" || retExpr == "false")
-                                litType = "boolean";
-                            else {
-                                bool isInt = !retExpr.empty();
-                                for (char c : retExpr) {
-                                    if (!isdigit(c)) { isInt = false; break; }
-                                }
-                                if (isInt) litType = "int";
-                                else if (retExpr.size() >= 2 &&
-                                         retExpr.front() == '"' &&
-                                         retExpr.back() == '"')
-                                    litType = "String";
-                            }
+            //     if (methodSym.getName() == "" ||
+            //         methodSym.kind != IdentifierKind::Method)
+            //         continue;
 
-                            if (!litType.empty()) {
-                                if (litType != cur.returnType) {
-                                    ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
-                                    error_num++;
-                                }
-                            }
-                            else {
-                                Symbol retSym =
-                                    symbol_table->lookup(retExpr, cur.methodScope);
+            //     auto mi = dynamic_pointer_cast<MethodInfo>(methodSym.data);
+            //     if (!mi) continue;
 
-                                if (retSym.getName() != "") {
-                                    string actualType = "";
+            //     ctx.returnType = mi->returnType.name;
+            //     ctx.valid = true;
 
-                                    if (retSym.kind == IdentifierKind::Variable) {
-                                        auto v = dynamic_pointer_cast<VariableInfo>(retSym.data);
-                                        if (v) actualType = v->type.name;
-                                    }
-                                    else if (retSym.kind == IdentifierKind::Parameter) {
-                                        auto p = dynamic_pointer_cast<ParameterInfo>(retSym.data);
-                                        if (p) actualType = p->type.name;
-                                    }
+            //     methods[ctx.startLine] = ctx;
+            // }
 
-                                    if (!actualType.empty() &&
-                                        actualType != cur.returnType) {
-                                        ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
-                                        error_num++;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            // stringstream ss(buffer);
+            // string line;
+            // size_t lineNo = 0;
 
-                if (braceDepth <= 0) {
-                    inMethod = false;
-                }
-            }
+            // bool inMethod = false;
+            // int braceDepth = 0;
+            // MethodCtx cur;
+
+            // while (getline(ss, line)) {
+            //     lineNo++;
+
+            //     if (!inMethod) {
+            //         auto it = methods.find(lineNo);
+            //         if (it != methods.end() && it->second.valid) {
+            //             cur = it->second;
+            //             inMethod = true;
+            //             braceDepth = 0;
+            //         }
+            //     }
+
+            //     if (!inMethod) continue;
+
+            //     braceDepth += count(line.begin(), line.end(), '{');
+            //     braceDepth -= count(line.begin(), line.end(), '}');
+
+            //     size_t p = line.find("return");
+            //     string retExpr = "";
+
+            //     if (p != string::npos) {
+            //         if (!(p > 0 && isalnum(line[p - 1]))) {
+            //             p += 6;
+            //             while (p < line.size() && isspace(line[p])) p++;
+            //             if (p < line.size()) {
+            //                 size_t end = line.find(';', p);
+            //                 if (end != string::npos) {
+            //                     retExpr = line.substr(p, end - p);
+            //                     retExpr.erase(0, retExpr.find_first_not_of(" \t"));
+            //                     retExpr.erase(retExpr.find_last_not_of(" \t;") + 1);
+            //                 }
+            //             }
+            //         }
+            //     }
+
+            //     if (!retExpr.empty() || line.find("return") != string::npos) {
+
+            //         if (retExpr.empty()) {
+            //             if (cur.returnType != "void") {
+            //                 ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
+            //                 error_num++;
+            //             }
+            //         }
+            //         else {
+            //             if (cur.returnType == "void") {
+            //                 ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
+            //                 error_num++;
+            //             }
+            //             else {
+            //                 string litType = "";
+
+            //                 if (retExpr == "true" || retExpr == "false")
+            //                     litType = "boolean";
+            //                 else {
+            //                     bool isInt = !retExpr.empty();
+            //                     for (char c : retExpr) {
+            //                         if (!isdigit(c)) { isInt = false; break; }
+            //                     }
+            //                     if (isInt) litType = "int";
+            //                     else if (retExpr.size() >= 2 &&
+            //                              retExpr.front() == '"' &&
+            //                              retExpr.back() == '"')
+            //                         litType = "String";
+            //                 }
+
+            //                 if (!litType.empty()) {
+            //                     if (litType != cur.returnType) {
+            //                         ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
+            //                         error_num++;
+            //                     }
+            //                 }
+            //                 else {
+            //                     Symbol retSym =
+            //                         symbol_table->lookup(retExpr, cur.methodScope);
+
+            //                     if (retSym.getName() != "") {
+            //                         string actualType = "";
+
+            //                         if (retSym.kind == IdentifierKind::Variable) {
+            //                             auto v = dynamic_pointer_cast<VariableInfo>(retSym.data);
+            //                             if (v) actualType = v->type.name;
+            //                         }
+            //                         else if (retSym.kind == IdentifierKind::Parameter) {
+            //                             auto p = dynamic_pointer_cast<ParameterInfo>(retSym.data);
+            //                             if (p) actualType = p->type.name;
+            //                         }
+
+            //                         if (!actualType.empty() &&
+            //                             actualType != cur.returnType) {
+            //                             ans.push_back(Error(lineNo, ErrorType::ReturnTypeMismatch));
+            //                             error_num++;
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     }
+
+            //     if (braceDepth <= 0) {
+            //         inMethod = false;
+            //     }
+            // }
 
             return ans;
         }
