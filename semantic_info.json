@@ -176,6 +176,7 @@
       "actual_return_types": [],
       "method_name": "main",
       "line": 1,
+      "return_line": -1,
       "full_scope": "Main::main"
     },
     {
@@ -187,6 +188,7 @@
       "actual_return_types": ["int"],
       "method_name": "method1",
       "line": 15,
+      "return_line": 18,
       "full_scope": "GLOBAL::A::method1"
     },
     {
@@ -195,6 +197,7 @@
       "actual_return_types": ["boolean"],
       "method_name": "method2",
       "line": 22,
+      "return_line": 23,
       "full_scope": "GLOBAL::A::method2"
     },
     {
@@ -203,6 +206,7 @@
       "actual_return_types": [],
       "method_name": "method3",
       "line": 27,
+      "return_line": -1,
       "full_scope": "GLOBAL::A::method3"
     },
     {
@@ -211,6 +215,7 @@
       "actual_return_types": [],
       "method_name": "method4",
       "line": 38,
+      "return_line": -1,
       "full_scope": "GLOBAL::A::method4"
     },
     {
@@ -219,6 +224,7 @@
       "actual_return_types": [],
       "method_name": "testScope",
       "line": 45,
+      "return_line": -1,
       "full_scope": "GLOBAL::B::testScope"
     },
     {
@@ -230,6 +236,7 @@
       "actual_return_types": ["int"],
       "method_name": "testDuplicate",
       "line": 58,
+      "return_line": 62,
       "full_scope": "GLOBAL::B::testDuplicate"
     },
     {
@@ -238,6 +245,7 @@
       "actual_return_types": ["void"],
       "method_name": "testDuplicate_1",
       "line": 65,
+      "return_line": 67,
       "full_scope": "GLOBAL::B::testDuplicate_1"
     },
     {
@@ -246,6 +254,7 @@
       "actual_return_types": ["String"],
       "method_name": "testDuplicate_2",
       "line": 69,
+      "return_line": 71,
       "full_scope": "GLOBAL::B::testDuplicate_2"
     },
     {
@@ -254,6 +263,7 @@
       "actual_return_types": ["String"],
       "method_name": "testDuplicate_3",
       "line": 73,
+      "return_line": 75,
       "full_scope": "GLOBAL::B::testDuplicate_3"
     }
   ],

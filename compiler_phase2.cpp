@@ -1399,6 +1399,10 @@ class Error{
             this->error_type = error_type;
         }
 
+        size_t get_line() const {
+            return this->error_line;
+        }
+
         void PrintError(){
             cout<<"\n[Error] Error happened in line "<< this->error_line<<'\n';
             cout<<"Error Type is {  " << tostring(this->error_type) <<"  }  \n";
@@ -1569,6 +1573,7 @@ class ErrorDetection {
 
                 string methodName = method.at("method_name");
                 int startLine = stoi(method.at("line"));
+                int returnLine = stoi(method.at("return_line"));
                 string actualReturnTypes;
                 if(method.count("actual_return_types")!=0){
                     actualReturnTypes = method.at("actual_return_types"); 
@@ -1596,7 +1601,13 @@ class ErrorDetection {
                             string declaredReturnType = methodData->returnType.name;
                             
                             if (declaredReturnType != actualReturnTypes) {
-                                ans.push_back(Error(startLine, ErrorType::ReturnTypeMismatch));
+                                int selected_line;
+                                if(returnLine!=-1){
+                                    selected_line = returnLine;
+                                }else{
+                                    selected_line = startLine;
+                                }
+                                ans.push_back(Error(selected_line, ErrorType::ReturnTypeMismatch));
                                 error_num++;
                             }
                         }
@@ -1607,7 +1618,13 @@ class ErrorDetection {
                 // solution 2
                 // string declaredReturnType = method.at("declared_return_type");
                 // if (declaredReturnType != actualReturnTypes) {
-                //     ans.push_back(Error(startLine, ErrorType::ReturnTypeMismatch));
+                //     int selected_line;
+                //     if(returnLine!=-1){
+                //         selected_line = returnLine;
+                //     }else{
+                //         selected_line = startLine;
+                //     }
+                //     ans.push_back(Error(selected_line, ErrorType::ReturnTypeMismatch));
                 //     error_num++;
                 // }
             }
@@ -1776,9 +1793,6 @@ class ErrorDetection {
 
             return ans;
         }
-
-
-
 
         vector<Error> Detect_Cyclic_Inheritance(){
             vector<Error> ans;
@@ -1955,25 +1969,38 @@ class ErrorDetection {
 
             cout<<"\n==================== Detected Errors ====================\n";
 
+            vector<Error> all_errors;
+
             for(auto err : Duplicate_Variable_Error){
-                err.PrintError();
+                // err.PrintError();
+                all_errors.push_back(err);
                 error_num++;
             }
             for(auto err : Method_Call_Signature_Mismatch){
-                err.PrintError();
+                // err.PrintError();
+                all_errors.push_back(err);
                 error_num++;
             }
             for(auto err : Return_Type_Mismatch){
-                err.PrintError();
+                // err.PrintError();
+                all_errors.push_back(err);
                 error_num++;
             }
             for(auto err : Cyclic_Inheritance){
-                err.PrintError();
+                // err.PrintError();
+                all_errors.push_back(err);
                 error_num++;
             }
             for(auto err : Invalid_Variable_Access){
-                err.PrintError();
+                // err.PrintError();
+                all_errors.push_back(err);
                 error_num++;
+            }
+
+            // Sort errors by line number
+            sort(all_errors.begin(), all_errors.end(), [](const Error& a, const Error& b) { return a.get_line()<b.get_line(); });
+            for(auto err : all_errors){
+                err.PrintError();
             }
 
             cout<<"\n=========================================================\n";
